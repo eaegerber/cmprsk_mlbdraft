@@ -1,0 +1,12 @@
+name: DraftSurvival
+title: DraftSurvival
+username:
+account: e-gerber
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6713353
+bundleId: 8951548
+url: https://e-gerber.shinyapps.io/DraftSurvival/
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: cleaned_analysis.R|Jul28_final_analysis.RData|mlbdraft2012_2016.xlsx|modelfit_831.RData
