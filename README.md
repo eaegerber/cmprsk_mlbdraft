@@ -6,7 +6,7 @@ This project examines how MLB draft‑day factors influence the time it takes fo
 
 ```
 cmprsk_mlbdraft/
-├── conferences/           # supplemental files presented at JSM 2022, 2023
+├── conferences/           # supplemental files presented at JSM 2022, NESSIS 2023, JSM 2024
 ├── data cleaning/         # Raw and processed datasets + .R files
 ├── R/                     
 │   ├── analysis_08_24.R   # most recent analysis
