@@ -83,7 +83,10 @@ scale_df <- clean_df_new
 scale_df$OvPck <- scale(clean_df_new$OvPck)
 scale_df$BSp <- scale(clean_df_new$BSp)
 
-cov0 <- model.matrix(~OvPck*BSp*Type*newPOS*COVID_era, data=scale_df)[,-1]
+# Need to do some more formal model selection maybe,
+# but, also, perhaps just should focus on AFT model because of the violation of the proportionality assumption
+# but I want to see how bad the violation is and how much it impacts the results first
+cov0 <- model.matrix(~OvPck*BSp*Type + OvPck*Type*newPOS + OvPck*COVID_era, data=scale_df)[,-1]
 crr.model0 <- crr(times, status, cov1=cov0, failcode=1)
 summary(crr.model0)
 crr.model02 <- crr(times, status, cov1=cov0, failcode=2)
@@ -148,7 +151,7 @@ dev.off()
 ## Alex Bregman
 PlayerList <- c("Bregman (2012)", "Bregman (2015)")
 
-clean_df[OvPck == 901,]
+clean_df[clean_df$OvPck == 901,]
 #Round 30
 mean(BSp[Rnd == 30])
 
@@ -159,19 +162,29 @@ sd.BSp <- sd(BSp)
 
 playercomp <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + scale(OvPck, center = center.OvPck, scale = sd.OvPck)*newPOS, data.frame(
   OvPck = c(901,2),
-  BSp = c(.26939,0.79514),
+  BSp = c(.2742857,0.79514),
+  Type = factor(c("HS","4Yr"), levels = c("4Yr", "HS", "JC")),
+  newPOS = factor(c("IF","IF"), levels = c("C", "IF", "LHP", "OF", "RHP"))))[,-1]
+
+playercomp2 <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + newPOS, data.frame(
+  OvPck = c(901,2),
+  BSp = c(.2742857,0.79514),
   Type = factor(c("HS","4Yr"), levels = c("4Yr", "HS", "JC")),
   newPOS = factor(c("IF","IF"), levels = c("C", "IF", "LHP", "OF", "RHP"))))[,-1]
 
 playercomp.pred1 <- predict(crr.model, playercomp)
-playercomp.pred2 <- predict(crr.model2, playercomp)
+playercomp.pred2 <- predict(crr.model2, playercomp2)
 
-plot(2012:2021, playercomp.pred1[,2], col = 4, type = "s", lty=1, lwd = 2, xlim = c(2012, 2024), ylim = c(0,1), main = "Alex Bregman Predicted Risks\nAssuming Avg Round 30 Bonus in 2012", ylab = "Predicted Risk", xlab = "Year")
-points(2012:2020, playercomp.pred2[,2], col = 2, type = "s", lty=2, lwd = 2)
-points(2015:2024, playercomp.pred1[,3], col = 5, type = "s", lty=1, lwd = 2)
-points(2015:2023, playercomp.pred2[,3], col = 7, type = "s", lty=2, lwd = 2)
+plot(2012:2023, playercomp.pred1[,2], col = 4, type = "s", lty=1, lwd = 2, xlim = c(2012, 2022), ylim = c(0,1), main = "Alex Bregman Predicted Risks\nAssuming Avg Round 30 Bonus in 2012", ylab = "Predicted Risk", xlab = "Year")
+points(2012:2024, playercomp.pred2[,2], col = 2, type = "s", lty=2, lwd = 2)
+points(2015:2026, playercomp.pred1[,3], col = 5, type = "s", lty=1, lwd = 2)
+points(2015:2027, playercomp.pred2[,3], col = 7, type = "s", lty=2, lwd = 2)
 points(2016, playercomp.pred1[2,3], pch=4, col=5, cex=2, lwd = 2)
 legend("topleft", c(paste(PlayerList[1],"Reach MLB"), paste(PlayerList[1], "Retire"), paste(PlayerList[2], "Reach MLB"), paste(PlayerList[2], "Retire"), "Observed Event"), lty=c(1,2,1,2, NA), pch = c(NA, NA, NA, NA, 4), col=c(4,2,5,7,1), lwd = 2, bty="n")
+
+clean_df[clean_df$OvPck == 507,]
+#Round 17
+mean(BSp[Rnd == 17])
 
 tombrady <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + scale(OvPck, center = center.OvPck, scale = sd.OvPck)*newPOS, data.frame(
   OvPck = c(507),
