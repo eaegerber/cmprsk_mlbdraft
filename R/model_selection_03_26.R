@@ -85,7 +85,7 @@ scale_df$BSp <- scale(clean_df_new$BSp)
 
 # Forward Model Selection using Log-Likelihood, likelihood ratio test (df), and p-values
 # Reach MLB
-cov0 <- model.matrix(~OvPck*BSp*Type + OvPck*newPOS*BSp + Age + Bats + COVID_era, data=scale_df)[,-1]
+cov0 <- model.matrix(~OvPck*BSp*Type + OvPck*newPOS + Age + Bats + COVID_era, data=scale_df)[,-1]
 crr.model0 <- crr(times, status, cov1=cov0, failcode=1)
 summary(crr.model0)
 
@@ -163,22 +163,12 @@ t(sapply(terms_to_check, \(nm) summ_stability(boot_mat, nm)))
 
 
 
-
-
-
-
-
-
-
-
-
 #### Once I think the model selection is done, check for proportionality
 # --- Proportional subdistribution hazards test (Fine–Gray) ---
-# install.packages("crrSC")
 library(crrSC)
 
 # MLB model
-X_mlb <- model.matrix(~OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS*BSp_sc + Age + Bats + COVID_era, data=df)[,-1, drop=FALSE]
+X_mlb <- model.matrix(~OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS + Age + Bats + COVID_era, data=df)[,-1, drop=FALSE]
 
 # psh.test needs: time, fstatus, z (covariate matrix)
 # D indicates which cause is the event of interest; for MLB (cause 1) use D=c(1,1) with fstatus coded 0/1/2

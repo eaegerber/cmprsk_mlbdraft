@@ -6,40 +6,51 @@ library(parallel)
 
 # Data prep
 clean_df <- read.csv("R/cleaned_df2.csv")
-
-df <- subset(clean_df, Signed == TRUE)
-df <- df[complete.cases(df), ]
-df <- df[df$Type %in% c("4Yr","HS","JC"), ]
-df <- df[df$Bats %in% c("B","L","R"), ]
-df <- df[df$Throws %in% c("L","R"), ]
-
-df$Pos[df$Pos == "P" & df$Throws == "L"] <- "LHP"
-df$Pos[df$Pos == "P" & df$Throws == "R"] <- "RHP"
-df$newPOS[df$newPOS == "P" & df$Throws == "L"] <- "LHP"
-df$newPOS[df$newPOS == "P" & df$Throws == "R"] <- "RHP"
+df <- clean_df[clean_df$Signed == TRUE,]
+df <- df[complete.cases(df),]
+df <- df[df$Type %in% c("4Yr", "HS", "JC"),]
+df <- df[df$Bats %in% c("B", "L", "R"),]
+df <- df[df$Throws %in% c("L", "R"),]
+df$Pos[which(df$Pos == "P" & df$Throws == "L")] <- "LHP"
+df$Pos[which(df$Pos == "P" & df$Throws == "R")] <- "RHP"
+df$newPOS[which(df$newPOS == "P" & df$Throws == "L")] <- "LHP"
+df$newPOS[which(df$newPOS == "P" & df$Throws == "R")] <- "RHP"
 
 df$Rnd <- as.factor(as.numeric(df$Rnd))
 
+# 1) Make sure scaled vars are numeric vectors (scale() returns a matrix)
 df$OvPck_sc <- as.numeric(scale(df$OvPck))
 df$BSp_sc   <- as.numeric(scale(df$BSp))
 
-df$status <- as.integer(df$status)
-df$times  <- as.numeric(df$times)
+# 2) Ensure factor types (droplevels helps)
+df$Type      <- droplevels(factor(df$Type))
+df$newPOS    <- droplevels(factor(df$newPOS))
+df$Bats      <- droplevels(factor(df$Bats))
+df$COVID_era <- droplevels(factor(df$COVID_era))
+
+# 3) Make status a factor with explicit censoring level
+#    (This avoids ambiguity about what "0" means inside Hist/FGR)
+df$status_fg <- factor(df$status, levels=c(0,1,2), labels=c("cens","MLB","Retire"))
+
+# 4) Build analysis data used by BOTH formulas, then drop NAs once
+vars_mlb <- c("times","status_fg","OvPck_sc","BSp_sc","Type","newPOS","Age","Bats","COVID_era")
+vars_ret <- c("times","status_fg","OvPck_sc","BSp_sc","Type","newPOS","Age")
+
+df_fg_mlb <- df[vars_mlb]
+df_fg_ret <- df[vars_ret]
+
+df_fg_mlb <- droplevels(df_fg_mlb[complete.cases(df_fg_mlb), ])
+df_fg_ret <- droplevels(df_fg_ret[complete.cases(df_fg_ret), ])
 
 # -----------------------------
 # 1) Fit Fine–Gray models (cause 1 and cause 2)
 # -----------------------------
 
-# MLB model (failcode=1)
-form_mlb_full <- Hist(times, status) ~
-  OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS*BSp_sc + Age + Bats + COVID_era
+form_mlb_full <- Hist(times, status_fg) ~ OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS + Age + Bats + COVID_era
+form_ret_full <- Hist(times, status_fg) ~ OvPck_sc*BSp_sc*Type + OvPck_sc*BSp_sc + newPOS + Age
 
-# Retire model (failcode=2)
-form_ret_full <- Hist(times, status) ~
-  OvPck_sc*BSp_sc*Type + OvPck_sc*BSp_sc + newPOS + Age
-
-fg_mlb <- FGR(form_mlb_full, data=df, cause=1)
-fg_ret <- FGR(form_ret_full, data=df, cause=2)
+fg_mlb <- FGR(form_mlb_full, data=df_fg_mlb, cause="MLB")
+fg_ret <- FGR(form_ret_full, data=df_fg_ret, cause="Retire")
 
 # -----------------------------
 # 2) CIF predictions
