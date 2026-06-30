@@ -156,7 +156,7 @@ summ_stability <- function(boot_mat, coef_name){
 
 terms_to_check <- c("OvPck:BSp:TypeHS", "OvPck:BSp:newPOSLHP")
 t(sapply(terms_to_check, \(nm) summ_stability(boot_mat, nm)))
-
+# Saved results in StabilityCheck.RData
 
 
 
@@ -168,32 +168,33 @@ t(sapply(terms_to_check, \(nm) summ_stability(boot_mat, nm)))
 library(crrSC)
 
 # MLB model
-X_mlb <- model.matrix(~OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS + Age + Bats + COVID_era, data=df)[,-1, drop=FALSE]
+X_mlb <- model.matrix(~OvPck*BSp*Type + OvPck*newPOS + Age + Bats + COVID_era, data=scale_df)[,-1, drop=FALSE]
 
 # psh.test needs: time, fstatus, z (covariate matrix)
 # D indicates which cause is the event of interest; for MLB (cause 1) use D=c(1,1) with fstatus coded 0/1/2
 # tf controls the time-function basis for time-varying effects (non-PH). Default in docs is cbind(t, t^2)
 
 # Global test (all covariates together)
-psh_global_mlb <- psh.test(time=df$times, fstatus=df$status, z=X_mlb,
-                          D=c(1,1),
-                          tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
+# Takes too long! Just worry about Type and newPOS interactions for now, since those are the most likely to violate PH
+# psh_global_mlb <- psh.test(time=df$times, fstatus=df$status, z=X_mlb,
+#                           D=c(1,1),
+#                           tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
 
-print(psh_global_mlb)
+# print(psh_global_mlb)
 
 # Targeted tests for specific blocks if global test is significant (e.g., Type, newPOS, OvPck, BSp):
 cols_type   <- grep("Type", colnames(X_mlb), fixed=TRUE)
 cols_newpos <- grep("newPOS", colnames(X_mlb), fixed=TRUE)
-cols_pick   <- grep("^OvPck_sc$|^OvPck_sc:", colnames(X_mlb))
-cols_bsp    <- grep("^BSp_sc$|:BSp_sc", colnames(X_mlb))
+# cols_pick   <- grep("^OvPck_sc$|^OvPck_sc:", colnames(X_mlb))
+# cols_bsp    <- grep("^BSp_sc$|:BSp_sc", colnames(X_mlb))
 
-psh_type_mlb   <- psh.test(df$times, df$status, X_mlb[, cols_type, drop=FALSE],   D=c(1,1),
+psh_type_mlb   <- psh.test(time = as.numeric(scale_df$times), fstatus = as.numeric(scale_df$status), z = X_mlb[, cols_type, drop=FALSE],
                            tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
-psh_newpos_mlb <- psh.test(df$times, df$status, X_mlb[, cols_newpos, drop=FALSE], D=c(1,1),
+psh_newpos_mlb <- psh.test(time = as.numeric(scale_df$times), fstatus = as.numeric(scale_df$status), z = X_mlb[, cols_newpos, drop=FALSE],
                            tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
-psh_pick_mlb   <- psh.test(df$times, df$status, X_mlb[, cols_pick, drop=FALSE],   D=c(1,1),
-                           tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
-psh_bsp_mlb    <- psh.test(df$times, df$status, X_mlb[, cols_bsp, drop=FALSE],    D=c(1,1),
-                           tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
+# psh_pick_mlb   <- psh.test(time = as.numeric(scale_df$times), fstatus = as.numeric(scale_df$status), z = X_mlb[, cols_pick, drop=FALSE],
+#                            tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
+# psh_bsp_mlb    <- psh.test(time = as.numeric(scale_df$times), fstatus = as.numeric(scale_df$status), z = X_mlb[, cols_bsp, drop=FALSE],
+#                            tf=function(t) cbind(log(pmax(t,1e-6)), (log(pmax(t,1e-6)))^2))
 
-list(type=psh_type_mlb, newPOS=psh_newpos_mlb, OvPck=psh_pick_mlb, BSp=psh_bsp_mlb)
+list(type=psh_type_mlb, newPOS=psh_newpos_mlb)#, OvPck=psh_pick_mlb, BSp=psh_bsp_mlb)
