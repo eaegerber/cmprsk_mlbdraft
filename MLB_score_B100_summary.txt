@@ -1,0 +1,22 @@
+$score
+    times        Model          AUC (%)        Brier (%)  IPA
+ 1:     3   Null model             50.0    2.0 [1.6;2.3]  0.0
+ 2:     3   MLB_simple 86.2 [81.8;89.5]    1.9 [1.5;2.2]  4.5
+ 3:     3 MLB_selected 86.1 [81.7;89.6]    1.9 [1.5;2.2]  4.8
+ 4:     5   Null model             50.0 11.7 [11.0;12.4]  0.0
+ 5:     5   MLB_simple 80.9 [78.8;82.8]   9.7 [9.1;10.3] 17.3
+ 6:     5 MLB_selected 81.0 [78.7;82.8]   9.5 [8.9;10.2] 18.5
+ 7:     8   Null model             50.0 17.5 [16.8;18.5]  0.0
+ 8:     8   MLB_simple 79.4 [77.4;81.2] 13.9 [13.1;14.8] 21.0
+ 9:     8 MLB_selected 79.4 [77.3;81.1] 13.8 [13.0;14.7] 21.5
+10:    10   Null model             50.0 18.2 [17.4;19.2]  0.0
+11:    10   MLB_simple 79.1 [77.0;80.9] 14.3 [13.7;15.3] 21.2
+12:    10 MLB_selected 79.1 [77.2;80.7] 14.3 [13.5;15.2] 21.6
+
+$contrasts
+   times        Model  Reference   delta AUC (%)  delta Brier (%)
+1:     3 MLB_selected MLB_simple -0.2 [-1.2;0.6]  -0.0 [-0.0;0.0]
+2:     5 MLB_selected MLB_simple  0.1 [-0.4;0.6] -0.1 [-0.2;-0.0]
+3:     8 MLB_selected MLB_simple  0.0 [-0.5;0.5] -0.1 [-0.2;-0.0]
+4:    10 MLB_selected MLB_simple  0.0 [-0.5;0.5]  -0.1 [-0.2;0.0]
+

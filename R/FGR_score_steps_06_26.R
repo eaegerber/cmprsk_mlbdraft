@@ -421,3 +421,15 @@ summary(score_mlb_boot_final)
 
 print(score_ret_boot_final)
 summary(score_ret_boot_final)
+
+capture.output(
+  summary(score_mlb_boot_final),
+  file = "MLB_score_B100_summary.txt"
+)
+
+capture.output(
+  summary(score_ret_boot_final),
+  file = "Retire_score_B100_summary.txt"
+)
+
+# Saved working environment in ModelValidation.RData
