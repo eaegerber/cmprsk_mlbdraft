@@ -6,14 +6,15 @@ This project examines how MLB draft‑day factors influence the time it takes fo
 
 ```
 cmprsk_mlbdraft/
-├── conferences/           # supplemental files presented at JSM 2022, NESSIS 2023, JSM 2024
-├── data cleaning/         # Raw and processed datasets + .R files
+├── conferences/                       # supplemental files presented at JSM 2022, NESSIS 2023, JSM 2024
+├── data cleaning/                     # Raw and processed datasets + .R files
 ├── R/                     
-│   ├── analysis_08_24.R   # most recent analysis
-│   ├── cleaned_df.csv     # data used for most recent analysis
-├── DraftSurvival/         # R Shiny interface code for interactive exploration
-│   ├── app.R              # Launches the UI and server
-└── README.md              # This overview
+│   ├── FGR score outputs/             # Model validation/assumption checking of Fine-Gray models
+│   ├── time varying tests/            # Testing for time varying effects of covariates
+│   ├── final model reporting outputs/ # Final modeling results/summary tables
+├── DraftSurvival/                     # R Shiny interface code for interactive exploration
+│   ├── app.R                          # Launches the UI and server
+└── README.md                          # This overview
 ```
 
 ## Try App
