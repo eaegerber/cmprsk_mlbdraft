@@ -45,7 +45,7 @@ The goal is to quantify time-to-event probabilities and provide a user-facing ap
                       "prodlim", "aftgee", "ranger",
                       "contsurvplot", "CFC"))
    ```
-3. **Replicate most recent analysis** with `R/analysis_08_24.R`  
+3. **Final Model Results/Tables Can Be Checked** with `ReportingTablesChecksSummaries.R`  
 4. **Launch the Shiny app**:
    ```r
    shiny::runApp("DraftSurvival/")
