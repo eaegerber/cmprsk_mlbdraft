@@ -1,0 +1,3 @@
+"model","tv_terms","df","LRT","p_value","p_value_formatted"
+"MLB","Type + OvPck",3,256.308,2.82800272620557e-55,"2.828e-55"
+"Retire","Type + OvPck + newPOS",7,113.143,2.0441236053609e-21,"2.044e-21"

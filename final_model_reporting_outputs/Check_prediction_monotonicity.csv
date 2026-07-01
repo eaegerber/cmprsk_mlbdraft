@@ -1,0 +1,17 @@
+"profile","outcome","static_monotone","tv_monotone"
+"Early 4Yr hitter","MLB",TRUE,TRUE
+"Early HS hitter","MLB",TRUE,TRUE
+"Early HS pitcher","MLB",TRUE,TRUE
+"Mid 4Yr pitcher","MLB",TRUE,TRUE
+"Mid JC hitter","MLB",TRUE,TRUE
+"Late 4Yr hitter","MLB",TRUE,TRUE
+"Late HS pitcher","MLB",TRUE,TRUE
+"Late HS hitter","MLB",TRUE,TRUE
+"Early 4Yr hitter","Retire",TRUE,TRUE
+"Early HS hitter","Retire",TRUE,TRUE
+"Early HS pitcher","Retire",TRUE,TRUE
+"Mid 4Yr pitcher","Retire",TRUE,TRUE
+"Mid JC hitter","Retire",TRUE,TRUE
+"Late 4Yr hitter","Retire",TRUE,TRUE
+"Late HS pitcher","Retire",TRUE,TRUE
+"Late HS hitter","Retire",TRUE,TRUE
