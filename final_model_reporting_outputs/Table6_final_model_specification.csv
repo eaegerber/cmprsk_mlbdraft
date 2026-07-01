@@ -1,0 +1,3 @@
+"outcome","static_selected_model","time_varying_terms","final_prediction_model","notes"
+"Reach MLB","OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS + Age + Bats + COVID_era","Type + OvPck_sc, varying with log(time)","Time-varying Fine-Gray model","BSp did not add time-varying signal after Type and OvPck_sc"
+"Retire without MLB","OvPck_sc*BSp_sc*Type + OvPck_sc*BSp_sc + newPOS + Age","Type + OvPck_sc + newPOS, varying with log(time)","Time-varying Fine-Gray model","BSp did not add time-varying signal; newPOS retained as a block"

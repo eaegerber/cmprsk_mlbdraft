@@ -411,3 +411,510 @@ write.csv(
   "time_varying_sensitivity_combined_summary.csv",
   row.names = FALSE
 )
+
+## Effects seem important, so let's try to interpret them
+# -----------------------------
+# 6) Time-specific effects from crr time-varying models
+# -----------------------------
+
+make_time_effect_table <- function(tv_obj, main_terms, tv_prefixes, times = c(1, 3, 5, 8, 10)) {
+  
+  coefs <- tv_obj$fit_tv$coef
+  
+  out <- list()
+  
+  for (i in seq_along(main_terms)) {
+    
+    main_term <- main_terms[i]
+    tv_prefix <- tv_prefixes[i]
+    
+    beta <- coefs[main_term]
+    
+    tv_name <- grep(
+      paste0("^", tv_prefix, "_x_logtime\\*tf"),
+      names(coefs),
+      value = TRUE
+    )
+    
+    if (length(tv_name) != 1) {
+      stop(paste("Could not uniquely find time-varying term for:", tv_prefix))
+    }
+    
+    gamma <- coefs[tv_name]
+    
+    tmp <- data.frame(
+      term = main_term,
+      time = times,
+      beta_main = as.numeric(beta),
+      gamma_logtime = as.numeric(gamma),
+      coef_at_time = as.numeric(beta + gamma * log(times)),
+      HR_at_time = as.numeric(exp(beta + gamma * log(times)))
+    )
+    
+    out[[i]] <- tmp
+  }
+  
+  do.call(rbind, out)
+}
+
+mlb_time_effects <- make_time_effect_table(
+  tv_obj = tv_mlb_combined,
+  main_terms = c("TypeHS", "TypeJC", "OvPck_sc"),
+  tv_prefixes = c("TypeHS", "TypeJC", "OvPck_sc"),
+  times = c(1, 3, 5, 8, 10)
+)
+
+print(mlb_time_effects)
+
+write.csv(
+  mlb_time_effects,
+  "MLB_time_varying_effects_by_horizon.csv",
+  row.names = FALSE
+)
+
+ret_time_effects <- make_time_effect_table(
+  tv_obj = tv_ret_combined,
+  main_terms = c(
+    "TypeHS",
+    "TypeJC",
+    "OvPck_sc",
+    "newPOSIF",
+    "newPOSLHP",
+    "newPOSOF",
+    "newPOSRHP"
+  ),
+  tv_prefixes = c(
+    "TypeHS",
+    "TypeJC",
+    "OvPck_sc",
+    "newPOSIF",
+    "newPOSLHP",
+    "newPOSOF",
+    "newPOSRHP"
+  ),
+  times = c(1, 3, 5, 8, 10)
+)
+
+print(ret_time_effects)
+
+write.csv(
+  ret_time_effects,
+  "Retire_time_varying_effects_by_horizon.csv",
+  row.names = FALSE
+)
+
+save(
+  tv_mlb_combined,
+  tv_ret_combined,
+  tv_combined_summary,
+  mlb_time_effects,
+  ret_time_effects,
+  file = "time_varying_sensitivity_reduced_final.RData"
+)
+
+
+# -----------------------------
+# 7) Final comparison for determining of time varying effects will be implemented in app
+# or just a sensitivity analysis test for the paper
+# -----------------------------
+
+tv_mlb_combined$fit_base   # static MLB selected model, fit with crr
+tv_mlb_combined$fit_tv     # MLB selected model + Type/OvPck x log(time)
+
+tv_ret_combined$fit_base   # static Retire selected model, fit with crr
+tv_ret_combined$fit_tv     # Retire selected model + Type/OvPck/newPOS x log(time)
+
+mlb_base_formula <- ~ OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS + Age + Bats + COVID_era
+ret_base_formula <- ~ OvPck_sc*BSp_sc*Type + OvPck_sc*BSp_sc + newPOS + Age
+mlb_tv_formula <- ~ Type + OvPck_sc
+ret_tv_formula <- ~ Type + OvPck_sc + newPOS
+
+## Helpers for static vs time-varying crr prediction comparison
+
+make_X_aligned <- function(formula, newdata, ref_cols) {
+  X <- model.matrix(formula, data = newdata)[, -1, drop = FALSE]
+  
+  missing_cols <- setdiff(ref_cols, colnames(X))
+  if (length(missing_cols) > 0) {
+    for (cc in missing_cols) {
+      X[, cc] <- 0
+    }
+  }
+  
+  extra_cols <- setdiff(colnames(X), ref_cols)
+  if (length(extra_cols) > 0) {
+    X <- X[, setdiff(colnames(X), extra_cols), drop = FALSE]
+  }
+  
+  X <- X[, ref_cols, drop = FALSE]
+  return(as.matrix(X))
+}
+
+make_tv_X_aligned <- function(tv_formula, newdata, training_data) {
+  X_train <- model.matrix(tv_formula, data = training_data)[, -1, drop = FALSE]
+  ref_cols <- colnames(X_train)
+  
+  X_new <- make_X_aligned(tv_formula, newdata, ref_cols)
+  colnames(X_new) <- paste0(colnames(X_new), "_x_logtime")
+  
+  return(X_new)
+}
+
+predict_crr_cif <- function(fit, cov1, horizons, cov2 = NULL) {
+  
+  if (is.null(cov2)) {
+    pred <- predict(fit, cov1 = cov1)
+  } else {
+    pred <- predict(fit, cov1 = cov1, cov2 = cov2)
+  }
+  
+  # predict.crr returns first column as time, then one column per profile
+  pred_time <- pred[, 1]
+  
+  out <- sapply(seq_len(nrow(cov1)), function(i) {
+    approx(
+      x = pred_time,
+      y = pred[, i + 1],
+      xout = horizons,
+      method = "constant",
+      f = 0,
+      rule = 2
+    )$y
+  })
+  
+  out <- as.data.frame(t(out))
+  names(out) <- paste0("t", horizons)
+  return(out)
+}
+
+# -----------------------------
+# Representative player profiles
+# -----------------------------
+
+# Use observed quantiles so the profiles are realistic on the scaled variables
+pick_q <- quantile(df_tv$OvPck_sc, probs = c(0.05, 0.50, 0.90), na.rm = TRUE)
+bsp_q  <- quantile(df_tv$BSp_sc,   probs = c(0.25, 0.50, 0.75), na.rm = TRUE)
+
+profiles <- data.frame(
+  profile = c(
+    "Early 4Yr hitter",
+    "Early HS hitter",
+    "Early HS pitcher",
+    "Mid 4Yr pitcher",
+    "Mid JC hitter",
+    "Late 4Yr hitter",
+    "Late HS pitcher",
+    "Late HS hitter"
+  ),
+  OvPck_sc = c(
+    pick_q[1],
+    pick_q[1],
+    pick_q[1],
+    pick_q[2],
+    pick_q[2],
+    pick_q[3],
+    pick_q[3],
+    pick_q[3]
+  ),
+  BSp_sc = c(
+    bsp_q[2],
+    bsp_q[2],
+    bsp_q[2],
+    bsp_q[2],
+    bsp_q[2],
+    bsp_q[2],
+    bsp_q[2],
+    bsp_q[2]
+  ),
+  Type = c(
+    "4Yr",
+    "HS",
+    "HS",
+    "4Yr",
+    "JC",
+    "4Yr",
+    "HS",
+    "HS"
+  ),
+  newPOS = c(
+    "IF",
+    "IF",
+    "RHP",
+    "RHP",
+    "OF",
+    "IF",
+    "RHP",
+    "OF"
+  ),
+  Age = c(
+    21.0,
+    18.5,
+    18.5,
+    21.5,
+    20.0,
+    22.0,
+    18.5,
+    18.5
+  ),
+  Bats = c(
+    "R",
+    "R",
+    "R",
+    "R",
+    "R",
+    "R",
+    "R",
+    "R"
+  ),
+  COVID_era = c(
+    "Post-COVID",
+    "Post-COVID",
+    "Post-COVID",
+    "Post-COVID",
+    "Post-COVID",
+    "Post-COVID",
+    "Post-COVID",
+    "Post-COVID"
+  )
+)
+
+# Force factor levels to match training data
+profiles$Type <- factor(profiles$Type, levels = levels(df_tv$Type))
+profiles$newPOS <- factor(profiles$newPOS, levels = levels(df_tv$newPOS))
+profiles$Bats <- factor(profiles$Bats, levels = levels(df_tv$Bats))
+profiles$COVID_era <- factor(profiles$COVID_era, levels = levels(df_tv$COVID_era))
+
+print(profiles)
+
+# -----------------------------
+# MLB model matrices
+# -----------------------------
+
+horizons <- c(3, 5, 8, 10)
+
+# Static selected MLB model matrix
+X_mlb_train <- model.matrix(mlb_base_formula, data = df_tv)[, -1, drop = FALSE]
+X_mlb_profiles <- make_X_aligned(
+  formula = mlb_base_formula,
+  newdata = profiles,
+  ref_cols = colnames(X_mlb_train)
+)
+
+# Time-varying MLB covariates
+Z_mlb_profiles <- make_tv_X_aligned(
+  tv_formula = ~ Type + OvPck_sc,
+  newdata = profiles,
+  training_data = df_tv
+)
+
+# -----------------------------
+# MLB static vs TV predictions
+# -----------------------------
+
+mlb_static_pred <- predict_crr_cif(
+  fit = tv_mlb_combined$fit_base,
+  cov1 = X_mlb_profiles,
+  horizons = horizons
+)
+
+mlb_tv_pred <- predict_crr_cif(
+  fit = tv_mlb_combined$fit_tv,
+  cov1 = X_mlb_profiles,
+  cov2 = Z_mlb_profiles,
+  horizons = horizons
+)
+
+mlb_compare <- data.frame(
+  profile = profiles$profile,
+  outcome = "MLB",
+  model = "static",
+  mlb_static_pred
+)
+
+mlb_compare_tv <- data.frame(
+  profile = profiles$profile,
+  outcome = "MLB",
+  model = "time_varying",
+  mlb_tv_pred
+)
+
+mlb_compare_all <- rbind(mlb_compare, mlb_compare_tv)
+
+print(mlb_compare_all)
+
+mlb_delta <- data.frame(
+  profile = profiles$profile,
+  outcome = "MLB",
+  t3_static  = mlb_static_pred$t3,
+  t3_tv      = mlb_tv_pred$t3,
+  t3_delta   = mlb_tv_pred$t3 - mlb_static_pred$t3,
+  t5_static  = mlb_static_pred$t5,
+  t5_tv      = mlb_tv_pred$t5,
+  t5_delta   = mlb_tv_pred$t5 - mlb_static_pred$t5,
+  t8_static  = mlb_static_pred$t8,
+  t8_tv      = mlb_tv_pred$t8,
+  t8_delta   = mlb_tv_pred$t8 - mlb_static_pred$t8,
+  t10_static = mlb_static_pred$t10,
+  t10_tv     = mlb_tv_pred$t10,
+  t10_delta  = mlb_tv_pred$t10 - mlb_static_pred$t10
+)
+
+print(mlb_delta)
+
+# -----------------------------
+# Retire model matrices
+# -----------------------------
+
+X_ret_train <- model.matrix(ret_base_formula, data = df_tv)[, -1, drop = FALSE]
+X_ret_profiles <- make_X_aligned(
+  formula = ret_base_formula,
+  newdata = profiles,
+  ref_cols = colnames(X_ret_train)
+)
+
+Z_ret_profiles <- make_tv_X_aligned(
+  tv_formula = ~ Type + OvPck_sc + newPOS,
+  newdata = profiles,
+  training_data = df_tv
+)
+
+# -----------------------------
+# Retire static vs TV predictions
+# -----------------------------
+
+ret_static_pred <- predict_crr_cif(
+  fit = tv_ret_combined$fit_base,
+  cov1 = X_ret_profiles,
+  horizons = horizons
+)
+
+ret_tv_pred <- predict_crr_cif(
+  fit = tv_ret_combined$fit_tv,
+  cov1 = X_ret_profiles,
+  cov2 = Z_ret_profiles,
+  horizons = horizons
+)
+
+ret_compare <- data.frame(
+  profile = profiles$profile,
+  outcome = "Retire",
+  model = "static",
+  ret_static_pred
+)
+
+ret_compare_tv <- data.frame(
+  profile = profiles$profile,
+  outcome = "Retire",
+  model = "time_varying",
+  ret_tv_pred
+)
+
+ret_compare_all <- rbind(ret_compare, ret_compare_tv)
+
+print(ret_compare_all)
+
+ret_delta <- data.frame(
+  profile = profiles$profile,
+  outcome = "Retire",
+  t3_static  = ret_static_pred$t3,
+  t3_tv      = ret_tv_pred$t3,
+  t3_delta   = ret_tv_pred$t3 - ret_static_pred$t3,
+  t5_static  = ret_static_pred$t5,
+  t5_tv      = ret_tv_pred$t5,
+  t5_delta   = ret_tv_pred$t5 - ret_static_pred$t5,
+  t8_static  = ret_static_pred$t8,
+  t8_tv      = ret_tv_pred$t8,
+  t8_delta   = ret_tv_pred$t8 - ret_static_pred$t8,
+  t10_static = ret_static_pred$t10,
+  t10_tv     = ret_tv_pred$t10,
+  t10_delta  = ret_tv_pred$t10 - ret_static_pred$t10
+)
+
+print(ret_delta)
+
+# -----------------------------
+# Combined output
+# -----------------------------
+
+static_vs_tv_delta <- rbind(mlb_delta, ret_delta)
+
+print(static_vs_tv_delta)
+
+write.csv(
+  static_vs_tv_delta,
+  "static_vs_time_varying_prediction_comparison.csv",
+  row.names = FALSE
+)
+
+save(
+  profiles,
+  mlb_static_pred,
+  mlb_tv_pred,
+  mlb_delta,
+  ret_static_pred,
+  ret_tv_pred,
+  ret_delta,
+  static_vs_tv_delta,
+  file = "static_vs_time_varying_prediction_comparison.RData"
+)
+
+# -----------------------------
+# Max absolute prediction difference
+# -----------------------------
+
+delta_cols <- grep("_delta$", names(static_vs_tv_delta), value = TRUE)
+
+max_delta_summary <- data.frame(
+  outcome = unique(static_vs_tv_delta$outcome),
+  max_abs_delta = sapply(unique(static_vs_tv_delta$outcome), function(out) {
+    dat <- static_vs_tv_delta[static_vs_tv_delta$outcome == out, delta_cols]
+    max(abs(as.matrix(dat)), na.rm = TRUE)
+  })
+)
+
+print(max_delta_summary)
+
+write.csv(
+  max_delta_summary,
+  "static_vs_time_varying_max_delta_summary.csv",
+  row.names = FALSE
+)
+
+save(
+  tv_mlb_combined,
+  tv_ret_combined,
+  tv_combined_summary,
+  mlb_time_effects,
+  ret_time_effects,
+  static_vs_tv_delta,
+  max_delta_summary,
+  file = "final_time_varying_model_results.RData"
+)
+
+# -----------------------------
+# Check combined CIF sanity for representative profiles
+# -----------------------------
+
+tv_combined_probs <- merge(
+  mlb_delta[, c("profile", "t3_tv", "t5_tv", "t8_tv", "t10_tv")],
+  ret_delta[, c("profile", "t3_tv", "t5_tv", "t8_tv", "t10_tv")],
+  by = "profile",
+  suffixes = c("_MLB", "_Retire")
+)
+
+tv_combined_probs$sum_t3  <- tv_combined_probs$t3_tv_MLB  + tv_combined_probs$t3_tv_Retire
+tv_combined_probs$sum_t5  <- tv_combined_probs$t5_tv_MLB  + tv_combined_probs$t5_tv_Retire
+tv_combined_probs$sum_t8  <- tv_combined_probs$t8_tv_MLB  + tv_combined_probs$t8_tv_Retire
+tv_combined_probs$sum_t10 <- tv_combined_probs$t10_tv_MLB + tv_combined_probs$t10_tv_Retire
+
+print(tv_combined_probs[, c("profile", "sum_t3", "sum_t5", "sum_t8", "sum_t10")])
+
+# Flag anything impossible
+tv_combined_probs[
+  tv_combined_probs$sum_t3 > 1 |
+    tv_combined_probs$sum_t5 > 1 |
+    tv_combined_probs$sum_t8 > 1 |
+    tv_combined_probs$sum_t10 > 1,
+]
+
+## Save everything in a CompletedModelSelection.RData

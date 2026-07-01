@@ -4246,3 +4246,539 @@ newPOSRHP_x_logtime*tf7 -0.16586350 0.8471619 0.06871762 -2.4136966 1.6e-02
 33 newPOSRHP    5  0.04961956   -0.16586350  -0.21732744  0.8046664
 34 newPOSRHP    8  0.04961956   -0.16586350  -0.29528389  0.7443203
 35 newPOSRHP   10  0.04961956   -0.16586350  -0.33229526  0.7172755
+convergence:  TRUE 
+coefficients:
+              OvPck_sc                 BSp_sc                 TypeHS                 TypeJC 
+             -1.843000               0.016090              -0.824800              -0.451500 
+              newPOSIF              newPOSLHP               newPOSOF              newPOSRHP 
+              0.472600               0.875800               0.147500               0.742200 
+                   Age                  BatsL                  BatsR     COVID_eraPre-COVID 
+             -0.140300               0.321200               0.163900               0.103500 
+       OvPck_sc:BSp_sc        OvPck_sc:TypeHS        OvPck_sc:TypeJC          BSp_sc:TypeHS 
+             -0.375900               0.024070               0.212300               0.092870 
+         BSp_sc:TypeJC      OvPck_sc:newPOSIF     OvPck_sc:newPOSLHP      OvPck_sc:newPOSOF 
+              0.008146               0.414200               0.891700               0.343900 
+    OvPck_sc:newPOSRHP OvPck_sc:BSp_sc:TypeHS OvPck_sc:BSp_sc:TypeJC 
+              0.717500               0.447300               0.027840 
+standard errors:
+ [1] 0.22300 0.08062 0.24950 0.17130 0.22930 0.22110 0.24670 0.21320 0.04268 0.14270 0.14120 0.08610
+[13] 0.09831 0.20270 0.17850 0.10980 0.13680 0.24120 0.23530 0.25540 0.22480 0.15410 0.26690
+two-sided p-values:
+              OvPck_sc                 BSp_sc                 TypeHS                 TypeJC 
+               2.2e-16                8.4e-01                9.5e-04                8.4e-03 
+              newPOSIF              newPOSLHP               newPOSOF              newPOSRHP 
+               3.9e-02                7.5e-05                5.5e-01                5.0e-04 
+                   Age                  BatsL                  BatsR     COVID_eraPre-COVID 
+               1.0e-03                2.4e-02                2.5e-01                2.3e-01 
+       OvPck_sc:BSp_sc        OvPck_sc:TypeHS        OvPck_sc:TypeJC          BSp_sc:TypeHS 
+               1.3e-04                9.1e-01                2.3e-01                4.0e-01 
+         BSp_sc:TypeJC      OvPck_sc:newPOSIF     OvPck_sc:newPOSLHP      OvPck_sc:newPOSOF 
+               9.5e-01                8.6e-02                1.5e-04                1.8e-01 
+    OvPck_sc:newPOSRHP OvPck_sc:BSp_sc:TypeHS OvPck_sc:BSp_sc:TypeJC 
+               1.4e-03                3.7e-03                9.2e-01 
+convergence:  TRUE 
+coefficients:
+              OvPck_sc                 BSp_sc                 TypeHS                 TypeJC 
+              -3.91900                0.08867               -7.77400               -2.74800 
+              newPOSIF              newPOSLHP               newPOSOF              newPOSRHP 
+               0.45060                0.83990                0.13290                0.71550 
+                   Age                  BatsL                  BatsR     COVID_eraPre-COVID 
+              -0.13370                0.32010                0.16210                0.14390 
+       OvPck_sc:BSp_sc        OvPck_sc:TypeHS        OvPck_sc:TypeJC          BSp_sc:TypeHS 
+              -0.22410               -0.49040               -0.03770                0.03881 
+         BSp_sc:TypeJC      OvPck_sc:newPOSIF     OvPck_sc:newPOSLHP      OvPck_sc:newPOSOF 
+              -0.03334                0.37050                0.82560                0.29520 
+    OvPck_sc:newPOSRHP OvPck_sc:BSp_sc:TypeHS OvPck_sc:BSp_sc:TypeJC   TypeHS_x_logtime*tf1 
+               0.65370                0.29010               -0.05054                3.90000 
+  TypeJC_x_logtime*tf2 OvPck_sc_x_logtime*tf3 
+               1.35200                1.37600 
+standard errors:
+ [1] 0.32790 0.07481 0.62630 0.66930 0.21650 0.20900 0.23310 0.20080 0.04187 0.13860 0.13690 0.08377
+[13] 0.09345 0.22260 0.17760 0.10880 0.12860 0.22110 0.21550 0.23470 0.20490 0.15990 0.25050 0.30280
+[25] 0.37850 0.16760
+two-sided p-values:
+              OvPck_sc                 BSp_sc                 TypeHS                 TypeJC 
+               0.0e+00                2.4e-01                0.0e+00                4.0e-05 
+              newPOSIF              newPOSLHP               newPOSOF              newPOSRHP 
+               3.7e-02                5.9e-05                5.7e-01                3.7e-04 
+                   Age                  BatsL                  BatsR     COVID_eraPre-COVID 
+               1.4e-03                2.1e-02                2.4e-01                8.6e-02 
+       OvPck_sc:BSp_sc        OvPck_sc:TypeHS        OvPck_sc:TypeJC          BSp_sc:TypeHS 
+               1.6e-02                2.8e-02                8.3e-01                7.2e-01 
+         BSp_sc:TypeJC      OvPck_sc:newPOSIF     OvPck_sc:newPOSLHP      OvPck_sc:newPOSOF 
+               8.0e-01                9.4e-02                1.3e-04                2.1e-01 
+    OvPck_sc:newPOSRHP OvPck_sc:BSp_sc:TypeHS OvPck_sc:BSp_sc:TypeJC   TypeHS_x_logtime*tf1 
+               1.4e-03                7.0e-02                8.4e-01                0.0e+00 
+  TypeJC_x_logtime*tf2 OvPck_sc_x_logtime*tf3 
+               3.6e-04                2.2e-16 
+convergence:  TRUE 
+coefficients:
+              OvPck_sc                 BSp_sc                 TypeHS                 TypeJC 
+               0.50730               -0.44020                0.28710                0.37650 
+              newPOSIF              newPOSLHP               newPOSOF              newPOSRHP 
+              -0.03719               -0.21600                0.08064               -0.15550 
+                   Age        OvPck_sc:BSp_sc        OvPck_sc:TypeHS        OvPck_sc:TypeJC 
+               0.14620                0.25140               -0.06704               -0.18170 
+         BSp_sc:TypeHS          BSp_sc:TypeJC OvPck_sc:BSp_sc:TypeHS OvPck_sc:BSp_sc:TypeJC 
+               0.35490                0.16430               -0.23910               -0.12450 
+standard errors:
+ [1] 0.02649 0.03726 0.08235 0.06020 0.05251 0.05750 0.05351 0.04814 0.01971 0.03470 0.04344 0.05550
+[13] 0.04822 0.07182 0.04386 0.07236
+two-sided p-values:
+              OvPck_sc                 BSp_sc                 TypeHS                 TypeJC 
+               0.0e+00                0.0e+00                4.9e-04                4.0e-10 
+              newPOSIF              newPOSLHP               newPOSOF              newPOSRHP 
+               4.8e-01                1.7e-04                1.3e-01                1.2e-03 
+                   Age        OvPck_sc:BSp_sc        OvPck_sc:TypeHS        OvPck_sc:TypeJC 
+               1.2e-13                4.3e-13                1.2e-01                1.1e-03 
+         BSp_sc:TypeHS          BSp_sc:TypeJC OvPck_sc:BSp_sc:TypeHS OvPck_sc:BSp_sc:TypeJC 
+               1.9e-13                2.2e-02                5.0e-08                8.5e-02 
+convergence:  TRUE 
+coefficients:
+               OvPck_sc                  BSp_sc                  TypeHS                  TypeJC 
+                0.57160                -0.44520                -0.52510                 0.51200 
+               newPOSIF               newPOSLHP                newPOSOF               newPOSRHP 
+                0.13130                 0.06612                 0.04968                 0.04962 
+                    Age         OvPck_sc:BSp_sc         OvPck_sc:TypeHS         OvPck_sc:TypeJC 
+                0.14110                 0.25880                -0.02136                -0.19760 
+          BSp_sc:TypeHS           BSp_sc:TypeJC  OvPck_sc:BSp_sc:TypeHS  OvPck_sc:BSp_sc:TypeJC 
+                0.36090                 0.16570                -0.25530                -0.12900 
+   TypeHS_x_logtime*tf1    TypeJC_x_logtime*tf2  OvPck_sc_x_logtime*tf3  newPOSIF_x_logtime*tf4 
+                0.55670                -0.11580                -0.05506                -0.13810 
+newPOSLHP_x_logtime*tf5  newPOSOF_x_logtime*tf6 newPOSRHP_x_logtime*tf7 
+               -0.23200                 0.02849                -0.16590 
+standard errors:
+ [1] 0.03909 0.03697 0.20240 0.07368 0.10180 0.10440 0.11200 0.09822 0.01914 0.03404 0.04628 0.05390
+[13] 0.04867 0.07065 0.04438 0.06961 0.12340 0.03621 0.02400 0.07115 0.07116 0.07927 0.06872
+two-sided p-values:
+               OvPck_sc                  BSp_sc                  TypeHS                  TypeJC 
+                0.0e+00                 0.0e+00                 9.5e-03                 3.7e-12 
+               newPOSIF               newPOSLHP                newPOSOF               newPOSRHP 
+                2.0e-01                 5.3e-01                 6.6e-01                 6.1e-01 
+                    Age         OvPck_sc:BSp_sc         OvPck_sc:TypeHS         OvPck_sc:TypeJC 
+                1.6e-13                 2.9e-14                 6.4e-01                 2.5e-04 
+          BSp_sc:TypeHS           BSp_sc:TypeJC  OvPck_sc:BSp_sc:TypeHS  OvPck_sc:BSp_sc:TypeJC 
+                1.2e-13                 1.9e-02                 8.9e-09                 6.4e-02 
+   TypeHS_x_logtime*tf1    TypeJC_x_logtime*tf2  OvPck_sc_x_logtime*tf3  newPOSIF_x_logtime*tf4 
+                6.5e-06                 1.4e-03                 2.2e-02                 5.2e-02 
+newPOSLHP_x_logtime*tf5  newPOSOF_x_logtime*tf6 newPOSRHP_x_logtime*tf7 
+                1.1e-03                 7.2e-01                 1.6e-02 
+           profile   OvPck_sc    BSp_sc Type newPOS  Age Bats  COVID_era
+1 Early 4Yr hitter -1.3069659 0.1314068  4Yr     IF 21.0    R Post-COVID
+2  Early HS hitter -1.3069659 0.1314068   HS     IF 18.5    R Post-COVID
+3 Early HS pitcher -1.3069659 0.1314068   HS    RHP 18.5    R Post-COVID
+4  Mid 4Yr pitcher -0.1743157 0.1314068  4Yr    RHP 21.5    R Post-COVID
+5    Mid JC hitter -0.1743157 0.1314068   JC     OF 20.0    R Post-COVID
+6  Late 4Yr hitter  1.5246596 0.1314068  4Yr     IF 22.0    R Post-COVID
+7  Late HS pitcher  1.5246596 0.1314068   HS    RHP 18.5    R Post-COVID
+8   Late HS hitter  1.5246596 0.1314068   HS     OF 18.5    R Post-COVID
+            profile outcome        model           t3           t5          t8         t10
+1  Early 4Yr hitter     MLB       static 6.402327e-02 0.3882551424 0.607889614 0.631083832
+2   Early HS hitter     MLB       static 3.672381e-02 0.2426287849 0.411049685 0.431010498
+3  Early HS pitcher     MLB       static 3.242173e-02 0.2171417651 0.372718755 0.391484913
+4   Mid 4Yr pitcher     MLB       static 1.425508e-02 0.1011525693 0.183849914 0.194577504
+5     Mid JC hitter     MLB       static 6.384993e-03 0.0464627373 0.086649495 0.092025074
+6   Late 4Yr hitter     MLB       static 8.740225e-04 0.0064736216 0.012296361 0.013091939
+7   Late HS pitcher     MLB       static 1.494621e-03 0.0110481580 0.020941900 0.022290500
+8    Late HS hitter     MLB       static 4.668082e-04 0.0034620343 0.006584974 0.007012335
+9  Early 4Yr hitter     MLB time_varying 1.076733e-01 0.4371104521 0.549888046 0.554731330
+10  Early HS hitter     MLB time_varying 6.698145e-03 0.1754736743 0.435470193 0.472301292
+11 Early HS pitcher     MLB time_varying 6.031345e-03 0.1594343399 0.402302616 0.437521086
+12  Mid 4Yr pitcher     MLB time_varying 1.079354e-02 0.1026862414 0.174802882 0.180519906
+13    Mid JC hitter     MLB time_varying 2.069905e-03 0.0371819458 0.084637541 0.090627295
+14  Late 4Yr hitter     MLB time_varying 2.185332e-04 0.0062401974 0.018354513 0.020493080
+15  Late HS pitcher     MLB time_varying 1.016869e-05 0.0018237087 0.017900126 0.026677682
+16   Late HS hitter     MLB time_varying 3.287711e-06 0.0005899982 0.005822800 0.008704354
+           profile outcome    t3_static        t3_tv      t3_delta   t5_static        t5_tv
+1 Early 4Yr hitter     MLB 0.0640232697 1.076733e-01  0.0436499823 0.388255142 0.4371104521
+2  Early HS hitter     MLB 0.0367238055 6.698145e-03 -0.0300256608 0.242628785 0.1754736743
+3 Early HS pitcher     MLB 0.0324217331 6.031345e-03 -0.0263903880 0.217141765 0.1594343399
+4  Mid 4Yr pitcher     MLB 0.0142550840 1.079354e-02 -0.0034615482 0.101152569 0.1026862414
+5    Mid JC hitter     MLB 0.0063849931 2.069905e-03 -0.0043150879 0.046462737 0.0371819458
+6  Late 4Yr hitter     MLB 0.0008740225 2.185332e-04 -0.0006554893 0.006473622 0.0062401974
+7  Late HS pitcher     MLB 0.0014946205 1.016869e-05 -0.0014844518 0.011048158 0.0018237087
+8   Late HS hitter     MLB 0.0004668082 3.287711e-06 -0.0004635205 0.003462034 0.0005899982
+       t5_delta   t8_static      t8_tv      t8_delta  t10_static      t10_tv    t10_delta
+1  0.0488553096 0.607889614 0.54988805 -0.0580015680 0.631083832 0.554731330 -0.076352502
+2 -0.0671551106 0.411049685 0.43547019  0.0244205080 0.431010498 0.472301292  0.041290795
+3 -0.0577074252 0.372718755 0.40230262  0.0295838609 0.391484913 0.437521086  0.046036174
+4  0.0015336721 0.183849914 0.17480288 -0.0090470323 0.194577504 0.180519906 -0.014057598
+5 -0.0092807916 0.086649495 0.08463754 -0.0020119542 0.092025074 0.090627295 -0.001397779
+6 -0.0002334242 0.012296361 0.01835451  0.0060581519 0.013091939 0.020493080  0.007401142
+7 -0.0092244493 0.020941900 0.01790013 -0.0030417738 0.022290500 0.026677682  0.004387182
+8 -0.0028720362 0.006584974 0.00582280 -0.0007621733 0.007012335 0.008704354  0.001692019
+            profile outcome        model         t3        t5        t8       t10
+1  Early 4Yr hitter  Retire       static 0.11297970 0.2235834 0.3498887 0.3953389
+2   Early HS hitter  Retire       static 0.12372415 0.2433020 0.3777322 0.4254841
+3  Early HS pitcher  Retire       static 0.11071274 0.2193889 0.3439012 0.3888276
+4   Mid 4Yr pitcher  Retire       static 0.19047735 0.3598469 0.5318588 0.5879986
+5     Mid JC hitter  Retire       static 0.28195342 0.5029985 0.6956811 0.7509027
+6   Late 4Yr hitter  Retire       static 0.47314531 0.7414604 0.8999150 0.9320604
+7   Late HS pitcher  Retire       static 0.33636803 0.5791642 0.7707030 0.8210432
+8    Late HS hitter  Retire       static 0.40503444 0.6658182 0.8451114 0.8868399
+9  Early 4Yr hitter  Retire time_varying 0.11169759 0.2248639 0.3512309 0.3952714
+10  Early HS hitter  Retire time_varying 0.08303848 0.2085866 0.3808602 0.4481610
+11 Early HS pitcher  Retire time_varying 0.07508367 0.1879488 0.3446175 0.4067659
+12  Mid 4Yr pitcher  Retire time_varying 0.19545316 0.3631811 0.5251526 0.5757749
+13    Mid JC hitter  Retire time_varying 0.28127663 0.5068920 0.6977609 0.7507267
+14  Late 4Yr hitter  Retire time_varying 0.49152920 0.7450351 0.8901392 0.9199696
+15  Late HS pitcher  Retire time_varying 0.27843156 0.5577376 0.7917006 0.8508000
+16   Late HS hitter  Retire time_varying 0.31843436 0.6462532 0.8820751 0.9296542
+           profile outcome t3_static      t3_tv      t3_delta t5_static     t5_tv     t5_delta
+1 Early 4Yr hitter  Retire 0.1129797 0.11169759 -0.0012821057 0.2235834 0.2248639  0.001280486
+2  Early HS hitter  Retire 0.1237241 0.08303848 -0.0406856698 0.2433020 0.2085866 -0.034715423
+3 Early HS pitcher  Retire 0.1107127 0.07508367 -0.0356290636 0.2193889 0.1879488 -0.031440123
+4  Mid 4Yr pitcher  Retire 0.1904774 0.19545316  0.0049758084 0.3598469 0.3631811  0.003334202
+5    Mid JC hitter  Retire 0.2819534 0.28127663 -0.0006767835 0.5029985 0.5068920  0.003893497
+6  Late 4Yr hitter  Retire 0.4731453 0.49152920  0.0183838908 0.7414604 0.7450351  0.003574670
+7  Late HS pitcher  Retire 0.3363680 0.27843156 -0.0579364668 0.5791642 0.5577376 -0.021426621
+8   Late HS hitter  Retire 0.4050344 0.31843436 -0.0866000789 0.6658182 0.6462532 -0.019565006
+  t8_static     t8_tv      t8_delta t10_static    t10_tv     t10_delta
+1 0.3498887 0.3512309  0.0013421765  0.3953389 0.3952714 -6.742388e-05
+2 0.3777322 0.3808602  0.0031280217  0.4254841 0.4481610  2.267694e-02
+3 0.3439012 0.3446175  0.0007163185  0.3888276 0.4067659  1.793828e-02
+4 0.5318588 0.5251526 -0.0067062328  0.5879986 0.5757749 -1.222379e-02
+5 0.6956811 0.6977609  0.0020797928  0.7509027 0.7507267 -1.759758e-04
+6 0.8999150 0.8901392 -0.0097757583  0.9320604 0.9199696 -1.209080e-02
+7 0.7707030 0.7917006  0.0209975464  0.8210432 0.8508000  2.975678e-02
+8 0.8451114 0.8820751  0.0369637007  0.8868399 0.9296542  4.281433e-02
+            profile outcome    t3_static        t3_tv      t3_delta   t5_static        t5_tv
+1  Early 4Yr hitter     MLB 0.0640232697 1.076733e-01  0.0436499823 0.388255142 0.4371104521
+2   Early HS hitter     MLB 0.0367238055 6.698145e-03 -0.0300256608 0.242628785 0.1754736743
+3  Early HS pitcher     MLB 0.0324217331 6.031345e-03 -0.0263903880 0.217141765 0.1594343399
+4   Mid 4Yr pitcher     MLB 0.0142550840 1.079354e-02 -0.0034615482 0.101152569 0.1026862414
+5     Mid JC hitter     MLB 0.0063849931 2.069905e-03 -0.0043150879 0.046462737 0.0371819458
+6   Late 4Yr hitter     MLB 0.0008740225 2.185332e-04 -0.0006554893 0.006473622 0.0062401974
+7   Late HS pitcher     MLB 0.0014946205 1.016869e-05 -0.0014844518 0.011048158 0.0018237087
+8    Late HS hitter     MLB 0.0004668082 3.287711e-06 -0.0004635205 0.003462034 0.0005899982
+9  Early 4Yr hitter  Retire 0.1129796953 1.116976e-01 -0.0012821057 0.223583421 0.2248639069
+10  Early HS hitter  Retire 0.1237241458 8.303848e-02 -0.0406856698 0.243301988 0.2085865651
+11 Early HS pitcher  Retire 0.1107127370 7.508367e-02 -0.0356290636 0.219388911 0.1879487880
+12  Mid 4Yr pitcher  Retire 0.1904773549 1.954532e-01  0.0049758084 0.359846899 0.3631811007
+13    Mid JC hitter  Retire 0.2819534168 2.812766e-01 -0.0006767835 0.502998539 0.5068920369
+14  Late 4Yr hitter  Retire 0.4731453078 4.915292e-01  0.0183838908 0.741460392 0.7450350615
+15  Late HS pitcher  Retire 0.3363680292 2.784316e-01 -0.0579364668 0.579164226 0.5577376051
+16   Late HS hitter  Retire 0.4050344355 3.184344e-01 -0.0866000789 0.665818196 0.6462531903
+        t5_delta   t8_static      t8_tv      t8_delta  t10_static      t10_tv     t10_delta
+1   0.0488553096 0.607889614 0.54988805 -0.0580015680 0.631083832 0.554731330 -7.635250e-02
+2  -0.0671551106 0.411049685 0.43547019  0.0244205080 0.431010498 0.472301292  4.129079e-02
+3  -0.0577074252 0.372718755 0.40230262  0.0295838609 0.391484913 0.437521086  4.603617e-02
+4   0.0015336721 0.183849914 0.17480288 -0.0090470323 0.194577504 0.180519906 -1.405760e-02
+5  -0.0092807916 0.086649495 0.08463754 -0.0020119542 0.092025074 0.090627295 -1.397779e-03
+6  -0.0002334242 0.012296361 0.01835451  0.0060581519 0.013091939 0.020493080  7.401142e-03
+7  -0.0092244493 0.020941900 0.01790013 -0.0030417738 0.022290500 0.026677682  4.387182e-03
+8  -0.0028720362 0.006584974 0.00582280 -0.0007621733 0.007012335 0.008704354  1.692019e-03
+9   0.0012804859 0.349888683 0.35123086  0.0013421765 0.395338857 0.395271433 -6.742388e-05
+10 -0.0347154230 0.377732179 0.38086020  0.0031280217 0.425484066 0.448161004  2.267694e-02
+11 -0.0314401228 0.343901151 0.34461747  0.0007163185 0.388827595 0.406765875  1.793828e-02
+12  0.0033342017 0.531858805 0.52515257 -0.0067062328 0.587998647 0.575774856 -1.222379e-02
+13  0.0038934974 0.695681138 0.69776093  0.0020797928 0.750902724 0.750726749 -1.759758e-04
+14  0.0035746697 0.899915000 0.89013924 -0.0097757583 0.932060386 0.919969588 -1.209080e-02
+15 -0.0214266208 0.770703016 0.79170056  0.0209975464 0.821043180 0.850799962  2.975678e-02
+16 -0.0195650058 0.845111353 0.88207505  0.0369637007 0.886839883 0.929654212  4.281433e-02
+       outcome max_abs_delta
+MLB        MLB    0.07635250
+Retire  Retire    0.08660008
+            profile outcome    t3_static        t3_tv      t3_delta   t5_static        t5_tv
+1  Early 4Yr hitter     MLB 0.0640232697 1.076733e-01  0.0436499823 0.388255142 0.4371104521
+2   Early HS hitter     MLB 0.0367238055 6.698145e-03 -0.0300256608 0.242628785 0.1754736743
+3  Early HS pitcher     MLB 0.0324217331 6.031345e-03 -0.0263903880 0.217141765 0.1594343399
+4   Mid 4Yr pitcher     MLB 0.0142550840 1.079354e-02 -0.0034615482 0.101152569 0.1026862414
+5     Mid JC hitter     MLB 0.0063849931 2.069905e-03 -0.0043150879 0.046462737 0.0371819458
+6   Late 4Yr hitter     MLB 0.0008740225 2.185332e-04 -0.0006554893 0.006473622 0.0062401974
+7   Late HS pitcher     MLB 0.0014946205 1.016869e-05 -0.0014844518 0.011048158 0.0018237087
+8    Late HS hitter     MLB 0.0004668082 3.287711e-06 -0.0004635205 0.003462034 0.0005899982
+9  Early 4Yr hitter  Retire 0.1129796953 1.116976e-01 -0.0012821057 0.223583421 0.2248639069
+10  Early HS hitter  Retire 0.1237241458 8.303848e-02 -0.0406856698 0.243301988 0.2085865651
+11 Early HS pitcher  Retire 0.1107127370 7.508367e-02 -0.0356290636 0.219388911 0.1879487880
+12  Mid 4Yr pitcher  Retire 0.1904773549 1.954532e-01  0.0049758084 0.359846899 0.3631811007
+13    Mid JC hitter  Retire 0.2819534168 2.812766e-01 -0.0006767835 0.502998539 0.5068920369
+14  Late 4Yr hitter  Retire 0.4731453078 4.915292e-01  0.0183838908 0.741460392 0.7450350615
+15  Late HS pitcher  Retire 0.3363680292 2.784316e-01 -0.0579364668 0.579164226 0.5577376051
+16   Late HS hitter  Retire 0.4050344355 3.184344e-01 -0.0866000789 0.665818196 0.6462531903
+        t5_delta   t8_static      t8_tv      t8_delta  t10_static      t10_tv     t10_delta
+1   0.0488553096 0.607889614 0.54988805 -0.0580015680 0.631083832 0.554731330 -7.635250e-02
+2  -0.0671551106 0.411049685 0.43547019  0.0244205080 0.431010498 0.472301292  4.129079e-02
+3  -0.0577074252 0.372718755 0.40230262  0.0295838609 0.391484913 0.437521086  4.603617e-02
+4   0.0015336721 0.183849914 0.17480288 -0.0090470323 0.194577504 0.180519906 -1.405760e-02
+5  -0.0092807916 0.086649495 0.08463754 -0.0020119542 0.092025074 0.090627295 -1.397779e-03
+6  -0.0002334242 0.012296361 0.01835451  0.0060581519 0.013091939 0.020493080  7.401142e-03
+7  -0.0092244493 0.020941900 0.01790013 -0.0030417738 0.022290500 0.026677682  4.387182e-03
+8  -0.0028720362 0.006584974 0.00582280 -0.0007621733 0.007012335 0.008704354  1.692019e-03
+9   0.0012804859 0.349888683 0.35123086  0.0013421765 0.395338857 0.395271433 -6.742388e-05
+10 -0.0347154230 0.377732179 0.38086020  0.0031280217 0.425484066 0.448161004  2.267694e-02
+11 -0.0314401228 0.343901151 0.34461747  0.0007163185 0.388827595 0.406765875  1.793828e-02
+12  0.0033342017 0.531858805 0.52515257 -0.0067062328 0.587998647 0.575774856 -1.222379e-02
+13  0.0038934974 0.695681138 0.69776093  0.0020797928 0.750902724 0.750726749 -1.759758e-04
+14  0.0035746697 0.899915000 0.89013924 -0.0097757583 0.932060386 0.919969588 -1.209080e-02
+15 -0.0214266208 0.770703016 0.79170056  0.0209975464 0.821043180 0.850799962  2.975678e-02
+16 -0.0195650058 0.845111353 0.88207505  0.0369637007 0.886839883 0.929654212  4.281433e-02
+       outcome max_abs_delta
+MLB        MLB    0.07635250
+Retire  Retire    0.08660008
+           profile     sum_t3    sum_t5    sum_t8   sum_t10
+1 Early 4Yr hitter 0.21937084 0.6619744 0.9011189 0.9500028
+2  Early HS hitter 0.08973662 0.3840602 0.8163304 0.9204623
+3 Early HS pitcher 0.08111502 0.3473831 0.7469201 0.8442870
+4  Late 4Yr hitter 0.49174773 0.7512753 0.9084938 0.9404627
+5   Late HS hitter 0.31843764 0.6468432 0.8878979 0.9383586
+6  Late HS pitcher 0.27844173 0.5595613 0.8096007 0.8774776
+7  Mid 4Yr pitcher 0.20624670 0.4658673 0.6999555 0.7562948
+8    Mid JC hitter 0.28334654 0.5440740 0.7823985 0.8413540
+ [1] profile       t3_tv_MLB     t5_tv_MLB     t8_tv_MLB     t10_tv_MLB    t3_tv_Retire  t5_tv_Retire 
+ [8] t8_tv_Retire  t10_tv_Retire sum_t3        sum_t5        sum_t8        sum_t10      
+<0 rows> (or 0-length row.names)
+                       metric value
+1            Final analysis N  9099
+2                 Reached MLB  1504
+3         Retired without MLB  4794
+4 Censored / still unresolved  2801
+  event_status    n percent
+1         cens 2801    30.8
+2          MLB 1504    16.5
+3       Retire 4794    52.7
+  Type    n percent
+1  4Yr 6918    76.0
+2   HS 1474    16.2
+3   JC  707     7.8
+  newPOS    n percent
+1      C  753     8.3
+2     IF 1867    20.5
+3    LHP 1316    14.5
+4     OF 1494    16.4
+5    RHP 3669    40.3
+     Year Rnd OvPck       Tm Bonus Slot          Name Pos Type COVID_era Bats Throws Age Pitch newPOS
+3056 2012   1     1   Astros  4.80 7.20 Carlos Correa  SS   HS Pre-COVID    R      R  17   Bat     IF
+3057 2012   1     2    Twins  6.00 6.20  Byron Buxton  OF   HS Pre-COVID    R      R  18   Bat     OF
+3058 2012   1     3 Mariners  4.00 5.20   Mike Zunino   C  4Yr Pre-COVID    R      R  21   Bat      C
+3059 2012   1     4  Orioles  4.32 4.20 Kevin Gausman RHP  4Yr Pre-COVID    L      R  21 Pitch    RHP
+3060 2012   1     5   Royals  3.00 3.50   Kyle Zimmer RHP  4Yr Pre-COVID    R      R  20 Pitch    RHP
+3061 2012   1     6     Cubs  3.90 3.25 Albert Almora  OF   HS Pre-COVID    R      R  18   Bat     OF
+           BSp   BmS times status Signed person_id has_later_draft  OvPck_sc      BSp_sc status_fg
+3056 0.6666667 -2.40     4      1   TRUE    621043           FALSE -1.426703 -0.04119998       MLB
+3057 0.9677419 -0.20     4      1   TRUE    621439           FALSE -1.423467  0.34855733       MLB
+3058 0.7692308 -1.20     2      1   TRUE    572287           FALSE -1.420231  0.09157449       MLB
+3059 1.0285714  0.12     2      1   TRUE    592332           FALSE -1.416995  0.42730422       MLB
+3060 0.8571429 -0.50     8      1   TRUE    622092           FALSE -1.413759  0.20538118       MLB
+3061 1.2000000  0.65     5      1   TRUE    546991           FALSE -1.410523  0.64922726       MLB
+     n         mean          sd   median q25.25%   q75.75%    min       max variable
+1 9099  20.76239147   1.5191418  21.0000  20.000  22.00000 16.000   25.0000      Age
+2 9099 441.86525992 309.0097863 388.0000 184.000 653.00000  1.000 1236.0000    OvPck
+3 9099   0.69849236   0.7724685   0.8000   0.008   1.00000  0.000   12.0000      BSp
+4 9099  -0.03267204   0.2153135  -0.0506  -0.100   0.00000 -2.915    3.1398      BmS
+5 9099   0.37264003   0.8659436   0.1000   0.001   0.27500  0.000    9.2500    Bonus
+6 9099   0.40531207   0.8695765   0.1250   0.100   0.26015  0.100   10.5706     Slot
+7 9099   4.18496538   2.3227611   4.0000   2.000   6.00000  0.000   13.0000    times
+  variable    n    mean      sd  median q25.25% q75.75%    min      max
+1      Age 9099  20.762   1.519  21.000  20.000  22.000 16.000   25.000
+2    OvPck 9099 441.865 309.010 388.000 184.000 653.000  1.000 1236.000
+3      BSp 9099   0.698   0.772   0.800   0.008   1.000  0.000   12.000
+4      BmS 9099  -0.033   0.215  -0.051  -0.100   0.000 -2.915    3.140
+5    Bonus 9099   0.373   0.866   0.100   0.001   0.275  0.000    9.250
+6     Slot 9099   0.405   0.870   0.125   0.100   0.260  0.100   10.571
+7    times 9099   4.185   2.323   4.000   2.000   6.000  0.000   13.000
+    Type cens  MLB Retire
+4Yr  4Yr 2120 1094   3704
+HS    HS  510  327    637
+JC    JC  171   83    453
+    newPOS cens MLB Retire
+C        C  218  99    436
+IF      IF  557 313    997
+LHP    LHP  402 251    663
+OF      OF  447 224    823
+RHP    RHP 1177 617   1875
+              outcome times        Model          AUC (%)        Brier (%)  IPA
+1           Reach MLB     3   Null model             50.0    2.0 [1.6;2.3]  0.0
+2           Reach MLB     3   MLB_simple 86.2 [81.8;89.5]    1.9 [1.5;2.2]  4.5
+3           Reach MLB     3 MLB_selected 86.1 [81.7;89.6]    1.9 [1.5;2.2]  4.8
+4           Reach MLB     5   Null model             50.0 11.7 [11.0;12.4]  0.0
+5           Reach MLB     5   MLB_simple 80.9 [78.8;82.8]   9.7 [9.1;10.3] 17.3
+6           Reach MLB     5 MLB_selected 81.0 [78.7;82.8]   9.5 [8.9;10.2] 18.5
+7           Reach MLB     8   Null model             50.0 17.5 [16.8;18.5]  0.0
+8           Reach MLB     8   MLB_simple 79.4 [77.4;81.2] 13.9 [13.1;14.8] 21.0
+9           Reach MLB     8 MLB_selected 79.4 [77.3;81.1] 13.8 [13.0;14.7] 21.5
+10          Reach MLB    10   Null model             50.0 18.2 [17.4;19.2]  0.0
+11          Reach MLB    10   MLB_simple 79.1 [77.0;80.9] 14.3 [13.7;15.3] 21.2
+12          Reach MLB    10 MLB_selected 79.1 [77.2;80.7] 14.3 [13.5;15.2] 21.6
+13 Retire without MLB     3   Null model             50.0 19.8 [19.3;20.5]  0.0
+14 Retire without MLB     3   Ret_simple 75.5 [73.9;77.2] 16.9 [16.3;17.6] 14.7
+15 Retire without MLB     3 Ret_selected 75.6 [74.1;77.3] 16.8 [16.3;17.4] 15.2
+16 Retire without MLB     5   Null model             50.0 24.9 [24.6;25.2]  0.0
+17 Retire without MLB     5   Ret_simple 75.0 [73.8;76.9] 20.6 [19.9;21.2] 17.2
+18 Retire without MLB     5 Ret_selected 75.0 [73.9;76.9] 20.4 [19.6;20.9] 18.2
+19 Retire without MLB     8   Null model             50.0 22.9 [22.1;23.5]  0.0
+20 Retire without MLB     8   Ret_simple 74.8 [73.2;76.5] 19.2 [18.4;20.0] 15.9
+21 Retire without MLB     8 Ret_selected 74.8 [73.1;76.5] 19.1 [18.2;19.9] 16.4
+22 Retire without MLB    10   Null model             50.0 21.1 [20.3;22.0]  0.0
+23 Retire without MLB    10   Ret_simple 75.6 [74.0;77.7] 17.8 [17.0;18.7] 15.7
+24 Retire without MLB    10 Ret_selected 75.6 [74.0;77.8] 17.7 [16.8;18.7] 16.2
+             outcome times        Model  Reference   delta AUC (%)  delta Brier (%)
+1          Reach MLB     3 MLB_selected MLB_simple -0.2 [-1.2;0.6]  -0.0 [-0.0;0.0]
+2          Reach MLB     5 MLB_selected MLB_simple  0.1 [-0.4;0.6] -0.1 [-0.2;-0.0]
+3          Reach MLB     8 MLB_selected MLB_simple  0.0 [-0.5;0.5] -0.1 [-0.2;-0.0]
+4          Reach MLB    10 MLB_selected MLB_simple  0.0 [-0.5;0.5]  -0.1 [-0.2;0.0]
+5 Retire without MLB     3 Ret_selected Ret_simple  0.1 [-0.3;0.4] -0.1 [-0.2;-0.0]
+6 Retire without MLB     5 Ret_selected Ret_simple -0.0 [-0.3;0.3] -0.2 [-0.4;-0.1]
+7 Retire without MLB     8 Ret_selected Ret_simple -0.0 [-0.6;0.4]  -0.1 [-0.4;0.2]
+8 Retire without MLB    10 Ret_selected Ret_simple  0.0 [-0.6;0.5]  -0.1 [-0.3;0.1]
+   model              tv_terms df     LRT      p_value p_value_formatted
+1    MLB          Type + OvPck  3 256.308 2.828003e-55         2.828e-55
+2 Retire Type + OvPck + newPOS  7 113.143 2.044124e-21         2.044e-21
+              outcome      term time beta_main gamma_logtime coef_at_time HR_at_time
+1           Reach MLB    TypeHS    1    -7.774         3.900       -7.774      0.000
+2           Reach MLB    TypeHS    3    -7.774         3.900       -3.489      0.031
+3           Reach MLB    TypeHS    5    -7.774         3.900       -1.497      0.224
+4           Reach MLB    TypeHS    8    -7.774         3.900        0.336      1.400
+5           Reach MLB    TypeHS   10    -7.774         3.900        1.207      3.342
+6           Reach MLB    TypeJC    1    -2.748         1.352       -2.748      0.064
+7           Reach MLB    TypeJC    3    -2.748         1.352       -1.263      0.283
+8           Reach MLB    TypeJC    5    -2.748         1.352       -0.572      0.564
+9           Reach MLB    TypeJC    8    -2.748         1.352        0.063      1.065
+10          Reach MLB    TypeJC   10    -2.748         1.352        0.365      1.440
+11          Reach MLB  OvPck_sc    1    -3.919         1.376       -3.919      0.020
+12          Reach MLB  OvPck_sc    3    -3.919         1.376       -2.407      0.090
+13          Reach MLB  OvPck_sc    5    -3.919         1.376       -1.705      0.182
+14          Reach MLB  OvPck_sc    8    -3.919         1.376       -1.058      0.347
+15          Reach MLB  OvPck_sc   10    -3.919         1.376       -0.751      0.472
+16 Retire without MLB    TypeHS    1    -0.525         0.557       -0.525      0.591
+17 Retire without MLB    TypeHS    3    -0.525         0.557        0.086      1.090
+18 Retire without MLB    TypeHS    5    -0.525         0.557        0.371      1.449
+19 Retire without MLB    TypeHS    8    -0.525         0.557        0.633      1.882
+20 Retire without MLB    TypeHS   10    -0.525         0.557        0.757      2.131
+21 Retire without MLB    TypeJC    1     0.512        -0.116        0.512      1.669
+22 Retire without MLB    TypeJC    3     0.512        -0.116        0.385      1.469
+23 Retire without MLB    TypeJC    5     0.512        -0.116        0.326      1.385
+24 Retire without MLB    TypeJC    8     0.512        -0.116        0.271      1.311
+25 Retire without MLB    TypeJC   10     0.512        -0.116        0.245      1.278
+26 Retire without MLB  OvPck_sc    1     0.572        -0.055        0.572      1.771
+27 Retire without MLB  OvPck_sc    3     0.572        -0.055        0.511      1.667
+28 Retire without MLB  OvPck_sc    5     0.572        -0.055        0.483      1.621
+29 Retire without MLB  OvPck_sc    8     0.572        -0.055        0.457      1.579
+30 Retire without MLB  OvPck_sc   10     0.572        -0.055        0.445      1.560
+31 Retire without MLB  newPOSIF    1     0.131        -0.138        0.131      1.140
+32 Retire without MLB  newPOSIF    3     0.131        -0.138       -0.020      0.980
+33 Retire without MLB  newPOSIF    5     0.131        -0.138       -0.091      0.913
+34 Retire without MLB  newPOSIF    8     0.131        -0.138       -0.156      0.856
+35 Retire without MLB  newPOSIF   10     0.131        -0.138       -0.187      0.830
+36 Retire without MLB newPOSLHP    1     0.066        -0.232        0.066      1.068
+37 Retire without MLB newPOSLHP    3     0.066        -0.232       -0.189      0.828
+38 Retire without MLB newPOSLHP    5     0.066        -0.232       -0.307      0.735
+39 Retire without MLB newPOSLHP    8     0.066        -0.232       -0.416      0.659
+40 Retire without MLB newPOSLHP   10     0.066        -0.232       -0.468      0.626
+41 Retire without MLB  newPOSOF    1     0.050         0.028        0.050      1.051
+42 Retire without MLB  newPOSOF    3     0.050         0.028        0.081      1.084
+43 Retire without MLB  newPOSOF    5     0.050         0.028        0.096      1.100
+44 Retire without MLB  newPOSOF    8     0.050         0.028        0.109      1.115
+45 Retire without MLB  newPOSOF   10     0.050         0.028        0.115      1.122
+46 Retire without MLB newPOSRHP    1     0.050        -0.166        0.050      1.051
+47 Retire without MLB newPOSRHP    3     0.050        -0.166       -0.133      0.876
+48 Retire without MLB newPOSRHP    5     0.050        -0.166       -0.217      0.805
+49 Retire without MLB newPOSRHP    8     0.050        -0.166       -0.295      0.744
+50 Retire without MLB newPOSRHP   10     0.050        -0.166       -0.332      0.717
+              outcome      term time beta_main gamma_logtime coef_at_time HR_at_time
+2           Reach MLB    TypeHS    3    -7.774         3.900       -3.489      0.031
+3           Reach MLB    TypeHS    5    -7.774         3.900       -1.497      0.224
+5           Reach MLB    TypeHS   10    -7.774         3.900        1.207      3.342
+7           Reach MLB    TypeJC    3    -2.748         1.352       -1.263      0.283
+8           Reach MLB    TypeJC    5    -2.748         1.352       -0.572      0.564
+10          Reach MLB    TypeJC   10    -2.748         1.352        0.365      1.440
+12          Reach MLB  OvPck_sc    3    -3.919         1.376       -2.407      0.090
+13          Reach MLB  OvPck_sc    5    -3.919         1.376       -1.705      0.182
+15          Reach MLB  OvPck_sc   10    -3.919         1.376       -0.751      0.472
+17 Retire without MLB    TypeHS    3    -0.525         0.557        0.086      1.090
+18 Retire without MLB    TypeHS    5    -0.525         0.557        0.371      1.449
+20 Retire without MLB    TypeHS   10    -0.525         0.557        0.757      2.131
+22 Retire without MLB    TypeJC    3     0.512        -0.116        0.385      1.469
+23 Retire without MLB    TypeJC    5     0.512        -0.116        0.326      1.385
+25 Retire without MLB    TypeJC   10     0.512        -0.116        0.245      1.278
+27 Retire without MLB  OvPck_sc    3     0.572        -0.055        0.511      1.667
+28 Retire without MLB  OvPck_sc    5     0.572        -0.055        0.483      1.621
+30 Retire without MLB  OvPck_sc   10     0.572        -0.055        0.445      1.560
+32 Retire without MLB  newPOSIF    3     0.131        -0.138       -0.020      0.980
+33 Retire without MLB  newPOSIF    5     0.131        -0.138       -0.091      0.913
+35 Retire without MLB  newPOSIF   10     0.131        -0.138       -0.187      0.830
+37 Retire without MLB newPOSLHP    3     0.066        -0.232       -0.189      0.828
+38 Retire without MLB newPOSLHP    5     0.066        -0.232       -0.307      0.735
+40 Retire without MLB newPOSLHP   10     0.066        -0.232       -0.468      0.626
+42 Retire without MLB  newPOSOF    3     0.050         0.028        0.081      1.084
+43 Retire without MLB  newPOSOF    5     0.050         0.028        0.096      1.100
+45 Retire without MLB  newPOSOF   10     0.050         0.028        0.115      1.122
+47 Retire without MLB newPOSRHP    3     0.050        -0.166       -0.133      0.876
+48 Retire without MLB newPOSRHP    5     0.050        -0.166       -0.217      0.805
+50 Retire without MLB newPOSRHP   10     0.050        -0.166       -0.332      0.717
+            profile outcome t3_static t3_tv t3_delta t5_static t5_tv t5_delta t8_static t8_tv t8_delta
+1  Early 4Yr hitter     MLB       6.4  10.8      4.4      38.8  43.7      4.9      60.8  55.0     -5.8
+2   Early HS hitter     MLB       3.7   0.7     -3.0      24.3  17.5     -6.7      41.1  43.5      2.4
+3  Early HS pitcher     MLB       3.2   0.6     -2.6      21.7  15.9     -5.8      37.3  40.2      3.0
+4   Mid 4Yr pitcher     MLB       1.4   1.1     -0.3      10.1  10.3      0.2      18.4  17.5     -0.9
+5     Mid JC hitter     MLB       0.6   0.2     -0.4       4.6   3.7     -0.9       8.7   8.5     -0.2
+6   Late 4Yr hitter     MLB       0.1   0.0     -0.1       0.6   0.6      0.0       1.2   1.8      0.6
+7   Late HS pitcher     MLB       0.1   0.0     -0.1       1.1   0.2     -0.9       2.1   1.8     -0.3
+8    Late HS hitter     MLB       0.0   0.0      0.0       0.3   0.1     -0.3       0.7   0.6     -0.1
+9  Early 4Yr hitter  Retire      11.3  11.2     -0.1      22.4  22.5      0.1      35.0  35.1      0.1
+10  Early HS hitter  Retire      12.4   8.3     -4.1      24.3  20.9     -3.5      37.8  38.1      0.3
+11 Early HS pitcher  Retire      11.1   7.5     -3.6      21.9  18.8     -3.1      34.4  34.5      0.1
+12  Mid 4Yr pitcher  Retire      19.0  19.5      0.5      36.0  36.3      0.3      53.2  52.5     -0.7
+13    Mid JC hitter  Retire      28.2  28.1     -0.1      50.3  50.7      0.4      69.6  69.8      0.2
+14  Late 4Yr hitter  Retire      47.3  49.2      1.8      74.1  74.5      0.4      90.0  89.0     -1.0
+15  Late HS pitcher  Retire      33.6  27.8     -5.8      57.9  55.8     -2.1      77.1  79.2      2.1
+16   Late HS hitter  Retire      40.5  31.8     -8.7      66.6  64.6     -2.0      84.5  88.2      3.7
+   t10_static t10_tv t10_delta
+1        63.1   55.5      -7.6
+2        43.1   47.2       4.1
+3        39.1   43.8       4.6
+4        19.5   18.1      -1.4
+5         9.2    9.1      -0.1
+6         1.3    2.0       0.7
+7         2.2    2.7       0.4
+8         0.7    0.9       0.2
+9        39.5   39.5       0.0
+10       42.5   44.8       2.3
+11       38.9   40.7       1.8
+12       58.8   57.6      -1.2
+13       75.1   75.1       0.0
+14       93.2   92.0      -1.2
+15       82.1   85.1       3.0
+16       88.7   93.0       4.3
+       outcome max_abs_delta max_abs_delta_percent_points
+MLB        MLB    0.07635250                          7.6
+Retire  Retire    0.08660008                          8.7
+           profile sum_t3 sum_t5 sum_t8 sum_t10
+1 Early 4Yr hitter   21.9   66.2   90.1    95.0
+2  Early HS hitter    9.0   38.4   81.6    92.0
+3 Early HS pitcher    8.1   34.7   74.7    84.4
+4  Late 4Yr hitter   49.2   75.1   90.8    94.0
+5   Late HS hitter   31.8   64.7   88.8    93.8
+6  Late HS pitcher   27.8   56.0   81.0    87.7
+7  Mid 4Yr pitcher   20.6   46.6   70.0    75.6
+8    Mid JC hitter   28.3   54.4   78.2    84.1
+[1] profile sum_t3  sum_t5  sum_t8  sum_t10
+<0 rows> (or 0-length row.names)
+            profile outcome static_monotone tv_monotone
+1  Early 4Yr hitter     MLB            TRUE        TRUE
+2   Early HS hitter     MLB            TRUE        TRUE
+3  Early HS pitcher     MLB            TRUE        TRUE
+4   Mid 4Yr pitcher     MLB            TRUE        TRUE
+5     Mid JC hitter     MLB            TRUE        TRUE
+6   Late 4Yr hitter     MLB            TRUE        TRUE
+7   Late HS pitcher     MLB            TRUE        TRUE
+8    Late HS hitter     MLB            TRUE        TRUE
+9  Early 4Yr hitter  Retire            TRUE        TRUE
+10  Early HS hitter  Retire            TRUE        TRUE
+11 Early HS pitcher  Retire            TRUE        TRUE
+12  Mid 4Yr pitcher  Retire            TRUE        TRUE
+13    Mid JC hitter  Retire            TRUE        TRUE
+14  Late 4Yr hitter  Retire            TRUE        TRUE
+15  Late HS pitcher  Retire            TRUE        TRUE
+16   Late HS hitter  Retire            TRUE        TRUE
+[1] profile         outcome         static_monotone tv_monotone    
+<0 rows> (or 0-length row.names)
+             outcome                                           static_selected_model
+1          Reach MLB OvPck_sc*BSp_sc*Type + OvPck_sc*newPOS + Age + Bats + COVID_era
+2 Retire without MLB           OvPck_sc*BSp_sc*Type + OvPck_sc*BSp_sc + newPOS + Age
+                                time_varying_terms       final_prediction_model
+1          Type + OvPck_sc, varying with log(time) Time-varying Fine-Gray model
+2 Type + OvPck_sc + newPOS, varying with log(time) Time-varying Fine-Gray model
+                                                            notes
+1     BSp did not add time-varying signal after Type and OvPck_sc
+2 BSp did not add time-varying signal; newPOS retained as a block
