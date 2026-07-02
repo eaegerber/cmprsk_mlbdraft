@@ -11,13 +11,33 @@ library(shiny)
 library(cmprsk)
 library(shinythemes)
 
-PlayerList <- c("Alex Bregman (2012)", "Alex Bregman (2015)", "Garrett Whitley (2015)", "Ryan Yarbrough (2013)", "Ryan Yarbrough (2014)", "Tyler Kolek (2014)")
+# Load final app model and prediction helpers once at startup
+final_app_model <- readRDS(file.path("model_objects", "final_app_model.rds"))
+source(file.path("R", "prediction_helpers.R"))
+
+
+info_label <- function(label, tooltip) {
+  tagList(
+    label,
+    tags$span(
+      class = "info-icon",
+      `data-toggle` = "tooltip",
+      `data-placement` = "right",
+      `data-html` = "true",
+      tabindex = "0",
+      title = tooltip,
+      "\u24D8"
+    )
+  )
+}
 
 # Define UI for application that draws survival curves
-ui <- fluidPage(theme = shinytheme("cosmo"),
+ui <- fluidPage(
+  theme = shinytheme("cosmo"),
 
-    tags$head(includeHTML(("google-analytics.html")),
-              tags$script(HTML("
+  tags$head(includeHTML(("google-analytics.html")),
+  
+  tags$script(HTML("
       $(document).ready(function(){
         function adjustButtonText() {
           var width = $(window).width();
@@ -25,7 +45,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
           if (width <= 900) {
             $('#autofill').text('Tom Brady?');
           } else {
-            $('#autofill').text('Should Tom Brady have played baseball? (Assume average Round 18 Bonus of $31k)');
+            $('#autofill').text('Should Tom Brady have played baseball? (Assume average Round 18 Bonus of $36k)');
           }
         }
 
@@ -34,24 +54,180 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
         $(window).resize(adjustButtonText);  // adjust text when the window is resized
       });
     ")),
-              tags$style(type = 'text/css', "
+  
+  tags$style(type = 'text/css', "
   #autofill {
     white-space: normal;
     width: 100%;  /* optional: makes sure the button stretches across the sidebar */
   }
-")),            
+"),
+  
+  tags$style(HTML("
+    body {
+      background-color: #f7f8fa;
+    }
+
+    .intro-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border-left: 5px solid #2c7fb8;
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .small-note {
+      color: #666666;
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    .input-section {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .input-section h4 {
+      margin-top: 0;
+      font-weight: 600;
+      color: #333333;
+      border-bottom: 1px solid #eeeeee;
+      padding-bottom: 6px;
+    }
+
+    .risk-card-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .risk-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      min-width: 180px;
+      flex: 1;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .risk-label {
+      font-size: 13px;
+      color: #666666;
+      margin-bottom: 4px;
+    }
+
+    .risk-value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .risk-value.mlb {
+      color: #2c7fb8;
+    }
+
+    .risk-value.retire {
+      color: #d95f02;
+    }
+
+    .risk-value.unresolved {
+      color: #666666;
+    }
+
+    .model-note {
+      background: #fffdf5;
+      border-left: 4px solid #f0ad4e;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #555555;
+      margin-top: 15px;
+    }
+
+    table {
+      background-color: #ffffff;
+    }
+    
+    .golden-plot-wrap {
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 1.618 / 1;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin: 0 auto 18px auto;
+    }
+    
+    .golden-plot-wrap .shiny-plot-output {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    .profile-summary {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      color: #444444;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .info-icon {
+      display: inline-block;
+      margin-left: 6px;
+      color: #2c7fb8;
+      cursor: help;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .tooltip-inner {
+      max-width: 320px;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+  ")),
+  
+  tags$script(HTML("
+  $(document).ready(function(){
+    $('[data-toggle=\"tooltip\"]').tooltip({
+      container: 'body',
+      html: true
+    });
+  });
+"))
+  ),          
                 
     navbarPage(
       "Competing Risks of MLB Draft Data",
+      
       tabPanel("Predict",
-               # Application title
-               titlePanel(h3("Predicting Player Risk")),
-               
-               # add white space
-               headerPanel(""),
+               # # Application title
+               # titlePanel(h3("Projected Player Draft Outcomes")),
+               # 
+               # # add white space
+               # headerPanel(""),
                
                # Link
-               uiOutput("description1"),
+               #uiOutput("description1"),
+               div(
+                 class = "intro-card",
+                 h3("MLB Draft Outcome Projection"),
+                 p("The plot below displays the predicted risk across each year after a player is drafted of both reaching MLB (blue solid) and Retiring (red dashed) based on the draft day factors as defined on the left."),
+                 p(class = "small-note", "Predictions are based on signed MLB draft picks from 2012–2024 using competing risks models. For more details on the project, please see the Project Information tab above."),
+                 p(class = "small-note", "Headline values show 6-year projections to align with minor league free agency; the table below includes additional 3-, 5-, 8-, and 10-year horizons.")
+               ),
                
                # add white space
                headerPanel(""),
@@ -59,90 +235,151 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                # Sidebar 
                sidebarLayout(
                  sidebarPanel(
-                   numericInput("o1",
-                                "Overall Pick #",
-                                value = 1,
-                                min = 1,
-                                max = 1200),  
-                   numericInput("b1",
-                                "Bonus (in millions $)",
-                                value = 10,
-                                min = 0,
-                                max = NA,
-                                step = .1),  
-                   numericInput("s1",
-                                "Slot (in millions $)",
-                                value = 10,
-                                min = 0,
-                                max = NA,
-                                step = .1),
-                   selectInput("t1",
-                               "Type of Draftee",
-                               choices = c("4Yr", "HS", "JC")),
-                   selectInput("p1",
-                               "Position",
-                               choices = c("C", "IF", "OF", "LHP", "RHP")),
-                   checkboxInput("a5",
-                                 "Add 50% Line?",
-                                 value = FALSE),
-                   #checkboxInput("ay",
-                   #              "Add Year Line?",
-                   #              value = FALSE),
-                   #numericInput("y1",
-                   #             "Year",
-                   #             value = 4,
-                   #             min = 0,
-                   #             max = 10),
-                   actionButton("autofill", 'Should Tom Brady have played baseball? (Assume average Round 18 Bonus of $31k)'),
-                   actionButton("reset", "Reset to Default", style = "color: white; background-color: green;"),
+                   
+                   div(
+                     class = "input-section",
+                     h4("Draft information"),
+                     numericInput("o1",
+                                  info_label(
+                                    "Overall Pick #",
+                                    "The player's overall draft pick number. Lower numbers indicate earlier selections. For example, pick 1 is the first overall pick, while pick 300 is a later-round selection."),
+                                  value = 1,
+                                  min = 1,
+                                  max = 1200),  
+                     numericInput("b1",
+                                  info_label(
+                                    "Signing Bonus (millions $)",
+                                    "The player's signing bonus, entered in millions of dollars. For example, enter 2.5 for a $2.5 million bonus, or 0.15 for $150,000."),
+                                  value = 10,
+                                  min = 0,
+                                  max = NA,
+                                  step = .1),
+                     numericInput("s1",
+                                  info_label(
+                                    "Slot Value (millions $)",
+                                    "The assigned MLB draft slot value for the pick, entered in millions of dollars. These are pre-determined before each draft and usually published on MLB.com. The minimum slot value in the MLB draft is $100,000. The model uses the bonus-to-slot ratio to estimate whether a player signed above or below slot."),
+                                  value = 10,
+                                  min = 0.1,
+                                  max = NA,
+                                  step = .1),
+                     textOutput("bonusSlotText")
+                   ),
+                   
+                   div(
+                     class = "input-section",
+                     h4("Player Profile"),
+                     # selectInput("t1",
+                     #             "Type of Draftee",
+                     #             choices = c("4Yr", "HS", "JC")),
+                     radioButtons(
+                       "t1",
+                       info_label(
+                         "Player Type",
+                         "The player's draft source. 4-year college players, high school players, and junior college players often follow different development timelines."),
+                       choices = c(
+                         "4-year college" = "4Yr",
+                         "High school" = "HS",
+                         "Junior college" = "JC"
+                       ),
+                       selected = "4Yr"
+                     ),
+                     # selectInput("p1",
+                     #             "Position",
+                     #             choices = c("C", "IF", "OF", "LHP", "RHP")),
+                     radioButtons(
+                       "p1",
+                       info_label(
+                         "Position",
+                         "The player's defensive position group at the time of drafting. Pitchers are separated into left-handed pitchers and right-handed pitchers."),
+                       choices = c(
+                         "C" = "C",
+                         "IF" = "IF",
+                         "OF" = "OF",
+                         "LHP" = "LHP",
+                         "RHP" = "RHP"
+                       ),
+                       selected = "IF",
+                       inline = TRUE
+                     ),
+                     numericInput("age1",
+                                  info_label(
+                                    "Age at Draft",
+                                    "The player's age in years at the time of the draft. Younger players, especially high school players, may have longer development timelines."),
+                                  value = 21,
+                                  min = 16,
+                                  max = 25,
+                                  step = 1),
+                     # selectInput("bats1",
+                     #             "Bats",
+                     #             choices = c("Right" = "R",
+                     #                         "Left" = "L",
+                     #                         "Switch" = "B"),
+                     #             selected = "R"),
+                     radioButtons(
+                       "bats1",
+                       info_label(
+                         "Bats",
+                         "The player's batting handedness: right-handed, left-handed, or switch hitter."),
+                       choices = c(
+                         "Right" = "R",
+                         "Left" = "L",
+                         "Switch" = "B"
+                       ),
+                       selected = "R",
+                       inline = TRUE)
+                     ),
+                   div(
+                     class = "input-section",
+                     h4("Display options"),
+                     checkboxInput("a5",
+                                   info_label(
+                                     "Add 50% line?",
+                                     "Adds a horizontal reference line at 50% cumulative probability."),
+                                   value = FALSE),
+                     #checkboxInput("ay",
+                     #              "Add Year Line?",
+                     #              value = FALSE),
+                     #numericInput("y1",
+                     #             "Year",
+                     #             value = 4,
+                     #             min = 0,
+                     #             max = 10),
+                     actionButton("autofill", 'Should Tom Brady have played baseball? (Assume average Round 18 Bonus of $36k)'),
+                     br(), br(),
+                     actionButton("reset", "Reset to Default", style = "color: white; background-color: green;") 
+                   ),
                    width = 3
                  ),
                  
                  # Show a plot of the generated distribution
                  mainPanel(
-                   plotOutput("distPlot", width = "550px"),
+                   uiOutput("profileSummary"),
+                   uiOutput("headlineRisk"),
+                   div(
+                     class = "golden-plot-wrap",
+                     plotOutput("distPlot", width = "100%", height = "100%")
+                   ),
+                   br(),
+                   h4("Predicted cumulative probabilities"),
+                   tableOutput("riskTable"),
+                   p(
+                     class = "small-note",
+                     "Table values show the estimated probability of each outcome by selected years after the draft, not guarantees for individual players."
+                   ),
                    width = 9
                  )
                )
                ),
-      tabPanel("Compare",
-               
-               # Application title
-               titlePanel(h2("Compare Two Players (Work in Progress)")),
-               
-               # add white space
-               headerPanel(""),
-               
-               # Link
-               uiOutput("description2"),
-               
-               # add white space
-               headerPanel(""),
-               
-               sidebarLayout(
-                 sidebarPanel(
-                   selectInput("playerA",
-                               "Pick Player A",
-                               PlayerList),
-                   selectInput("playerB",
-                               "Pick Player B",
-                               PlayerList),
-                   h5("Alex Bregman reached MLB in his 2nd year."),
-                   h5("Garret Whitley is still playing in MiLB."),
-                   h5("Ryan Yarbrough reached MLB in his 5th year."),
-                   h5("Tyler Kolek retired after his 5th year."),
-                   checkboxInput("a6",
-                                 "Add 50% Line?",
-                                 value = FALSE),
-                   width = 3
-                 ),
-                 
-                 mainPanel(
-                   plotOutput("distPlot2", width = "550px"),
-                   width = 9
-                 )
-               )
-               ),
+      
+      # tabPanel(
+      #   "Compare Players",
+      #   div(
+      #     class = "intro-card",
+      #     h3("Compare Players"),
+      #     p("This feature is being updated for the new time-varying model and will be added in a future version.")
+      #   )
+      # ),
+      
       tabPanel("Project Information",
                
                # Link to poster
@@ -190,14 +427,15 @@ server <- function(input, output, session) {
 #    tagList("Dr. Gerber can be reached via ", linkedIn, " or ", ResearchGate)
 #  })
   
-  output$description1 <- renderUI({
-    tagList("The plot below displays the predicted risk across each year after a player is drafted of both reaching MLB (blue solid) and retiring (red dashed) based on the draft day factors as defined on the left. A naive prediction of when an event may occur would be the year the risk surpasses 50%. For more details on the project, please see the Project Information tab above. 
-            
-            \n\n Please note these are the predicted risks under the Fine-Gray model; at the moment, generating individual predictions under the Accelerated-Failure Time model is too computationally intensive.")
-  })
   
-  output$description2 <- renderUI({
-    tagList("The below plot compares the predicted risk for several example players. The chosen players illustrate a range of possible outcomes: Alex Bregman and Ryan Yarbrough both improved their chances of reaching MLB by re-entering the draft after being initially drafted, and subsequently did reach MLB. Tyler Kolek was a top draft pick, predicted to easily reach MLB, but retired without doing so. Garret Whitley, as of the running of this model, is still playing in the minors.")
+  output$bonusSlotText <- renderText({
+    validate(
+      need(input$s1 > 0, "")
+    )
+    
+    ratio <- input$b1 / input$s1
+    
+    paste0("Bonus / slot ratio: ", round(ratio, 2))
   })
   
   observeEvent(input$autofill, {
@@ -205,8 +443,10 @@ server <- function(input, output, session) {
     updateNumericInput(session, "o1", value = 507)
     updateNumericInput(session, "b1", value = .036)
     updateNumericInput(session, "s1", value = .1)
-    updateSelectInput(session, "t1", selected = "HS")
-    updateSelectInput(session, "p1", selected = "C")
+    updateRadioButtons(session, "t1", selected = "HS")
+    updateRadioButtons(session, "p1", selected = "C")
+    updateNumericInput(session, "age1", value = 17)
+    updateRadioButtons(session, "bats1", selected = "R")
     updateCheckboxInput(session, "a5", value = FALSE)
     # Add similar lines for any other inputs you want to update.
   })
@@ -216,83 +456,175 @@ server <- function(input, output, session) {
     updateNumericInput(session, "o1", value = 1)
     updateNumericInput(session, "b1", value = 10)
     updateNumericInput(session, "s1", value = 10)
-    updateSelectInput(session, "t1", selected = "4Yr")
-    updateSelectInput(session, "p1", selected = "C")
+    updateRadioButtons(session, "t1", selected = "4Yr")
+    updateRadioButtons(session, "p1", selected = "C")
+    updateNumericInput(session, "age1", value = 21)
+    #updateSelectInput(session, "bats1", selected = "R")
+    updateRadioButtons(session, "bats1", selected = "R" )
     updateCheckboxInput(session, "a5", value = FALSE)
     # Add similar lines for any other inputs you want to update.
   })
 
-    output$distPlot <- renderPlot({
-        #load model
-        load("modelfit_050224.RData")
-        #Dataframe
-        newdata <- data.frame(
-        OvPck = rep(input$o1, 2),
-        BSp = rep(input$b1/input$s1, 2),
-        Type = factor(rep(input$t1, 2), levels = c("4Yr", "HS", "JC")),
-        newPOS = factor(rep(input$p1, 2), levels = c("C", "IF", "LHP", "OF", "RHP")))
-        
-        #Old Data (in preparation for eventually doing AFT predictions?)
-        olddf <- scale_df[,c("OvPck", "BSp", "Type", "newPOS")]
-      
-        #get predictions
-        newdf1 <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + scale(OvPck, center = center.OvPck, scale = sd.OvPck)*newPOS, newdata)[,-1]
-        colnames(newdf1) <- colnames(cov1)
-        
-        newdf2 <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + newPOS, newdata)[,-1]
-        colnames(newdf2) <- colnames(cov2)
-        
-        playerpred1 <- predict(crr.model, newdf1)
-        playerpred2 <- predict(crr.model2, newdf2)
-        
-        # draw the plot
-        plot(playerpred1[,2], col = 4, type = "s", lty=1, lwd = 2, ylim = c(0,1), main = "Player Risk", ylab = "Predicted Risk", xlab = "Years")
-        points(playerpred2[,2], col = 2, type = "s", lty=2, lwd = 2)
-        legend("topleft", c("Reach MLB", "Retire"), lty=1:2, col=c(4,2), lwd = 2)
-        if(input$a5 == TRUE){
-          abline(h = .5, col = 1, lwd=2)
-        }
-        #if(input$ay == TRUE){
-        #  abline(v = input$y1, col = 1, lwd =2)
-        #}
-    })
+  output$profileSummary <- renderUI({
     
+    bonus_slot <- input$b1 / input$s1
     
-    output$distPlot2 <- renderPlot({
-      #load model
-      load("modelfit_050224.RData")
-      
-      playercomp1 <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + scale(OvPck, center = center.OvPck, scale = sd.OvPck)*newPOS, data.frame(
-        OvPck = c(901,2,13,602,111,2),
-        BSp = c(0/.1,5.9/7.4201,2.9596/2.9621,0/.1,.04/0.4714,6/6.8218
-),
-        Type = factor(c("HS","4Yr","HS","4Yr","4Yr","HS"), levels = c("4Yr", "HS", "JC")),
-        newPOS = factor(c("IF","IF","OF","LHP","LHP","RHP"), levels = c("C", "IF", "LHP", "OF", "RHP"))))[,-1]
-      colnames(playercomp1) <- colnames(cov1)
-      
-      playercomp2 <- model.matrix(~scale(OvPck, center = center.OvPck, scale = sd.OvPck)*scale(BSp, center = center.BSp, scale = sd.BSp)*Type + newPOS, data.frame(
-        OvPck = c(901,2,13,602,111,2),
-        BSp = c(0/.1,5.9/7.4201,2.9596/2.9621,0/.1,.04/0.4714,6/6.8218
-        ),
-        Type = factor(c("HS","4Yr","HS","4Yr","4Yr","HS"), levels = c("4Yr", "HS", "JC")),
-        newPOS = factor(c("IF","IF","OF","LHP","LHP","RHP"), levels = c("C", "IF", "OF", "LHP", "RHP"))))[,-1]
-      colnames(playercomp2) <- colnames(cov2)
-      
-      plA <- which(PlayerList == input$playerA)
-      plB <- which(PlayerList == input$playerB)
-      
-      playercomp.pred1 <- predict(crr.model, playercomp1[c(plA,plB),])
-      playercomp.pred2 <- predict(crr.model2, playercomp2[c(plA,plB),])
-      
-      plot(playercomp.pred1[,2], col = 4, type = "s", lty=1, lwd = 2, ylim = c(0,1), main = "Player Risk Comparison", ylab = "Predicted Risk", xlab = "Years")
-      points(playercomp.pred2[,2], col = 2, type = "s", lty=2, lwd = 2)
-      points(playercomp.pred1[,3], col = 5, type = "s", lty=3, lwd = 2)
-      points(playercomp.pred2[,3], col = 7, type = "s", lty=4, lwd = 2)
-      legend("topleft", c(paste(input$playerA,"Reach MLB"), paste(input$playerA, "Retire"), paste(input$playerB, "Reach MLB"), paste(input$playerB, "Retire")), lty=1:4, col=c(4,2,5,7), lwd = 2)
-      if(input$a6 == TRUE){
-        abline(h = .5, col = 1, lwd=2)
-      }
-    })
+    div(
+      class = "profile-summary",
+      strong("Current player: "),
+      paste0(
+        input$t1, ", ",
+        input$p1, ", bats ", input$bats1,
+        ", age ", input$age1,
+        ", pick ", input$o1,
+        ", bonus/slot = ", round(bonus_slot, 2)
+      )
+    )
+  })
+  
+  output$headlineRisk <- renderUI({
+    
+    validate(
+      need(input$s1 > 0, "Slot value must be greater than 0."),
+      need(input$b1 >= 0, "Bonus must be non-negative."),
+      need(input$o1 >= 1, "Overall pick must be at least 1."),
+      need(input$age1 >= 16 && input$age1 <= 25, "Age must be between 16 and 25.")
+    )
+    
+    headline_horizon <- 6
+    
+    pred <- predict_player_risks(
+      model_obj = final_app_model,
+      ovpck = input$o1,
+      bonus = input$b1,
+      slot = input$s1,
+      type = input$t1,
+      newpos = input$p1,
+      age = input$age1,
+      bats = input$bats1,
+      covid_era = "Post-COVID",
+      horizons = headline_horizon
+    )
+    
+    div(
+      class = "risk-card-row",
+      div(
+        class = "risk-card",
+        div(class = "risk-label", paste0("Reach MLB by ", headline_horizon, " years")),
+        div(class = "risk-value mlb", paste0(round(100 * pred$MLB, 1), "%"))
+      ),
+      div(
+        class = "risk-card",
+        div(class = "risk-label", paste0("Retire before MLB by ", headline_horizon, " years")),
+        div(class = "risk-value retire", paste0(round(100 * pred$Retire, 1), "%"))
+      ),
+      div(
+        class = "risk-card",
+        div(class = "risk-label", paste0("Still playing in MiLB at ", headline_horizon, " years")),
+        div(class = "risk-value unresolved", paste0(round(100 * pred$Unresolved, 1), "%"))
+      )
+    )
+  })
+  
+  output$distPlot <- renderPlot({
+    
+    validate(
+      need(input$s1 > 0, "Slot value must be greater than 0."),
+      need(input$b1 >= 0, "Bonus must be non-negative."),
+      need(input$o1 >= 1, "Overall pick must be at least 1."),
+      need(input$age1 >= 16 && input$age1 <= 25, "Age must be between 16 and 25.")
+    )
+    
+    # Use annual predictions for smoother app-facing plot
+    plot_horizons <- 1:10
+    
+    pred <- predict_player_risks(
+      model_obj = final_app_model,
+      ovpck = input$o1,
+      bonus = input$b1,
+      slot = input$s1,
+      type = input$t1,
+      newpos = input$p1,
+      age = input$age1,
+      bats = input$bats1,
+      covid_era = "Post-COVID",
+      horizons = plot_horizons
+    )
+    
+    plot(
+      pred$time,
+      pred$MLB,
+      col = 4,
+      type = "s",
+      lty = 1,
+      lwd = 2,
+      ylim = c(0, 1),
+      xaxt = "n",
+      main = "Projected Draft Outcomes",
+      ylab = "Cumulative Probability",
+      xlab = "Years Since Draft"
+    )
+    
+    axis(1, at = plot_horizons)
+    
+    points(
+      pred$time,
+      pred$Retire,
+      col = 2,
+      type = "s",
+      lty = 2,
+      lwd = 2
+    )
+    
+    legend(
+      "topleft",
+      c("Reach MLB", "Retire before MLB"),
+      lty = c(1, 2),
+      col = c(4, 2),
+      lwd = 2,
+      bty = "n"
+    )
+    
+    if (input$a5 == TRUE) {
+      abline(h = .5, col = 1, lwd = 2)
+    }
+  })
+  
+  output$riskTable <- renderTable({
+    
+    validate(
+      need(input$s1 > 0, "Slot value must be greater than 0."),
+      need(input$b1 >= 0, "Bonus must be non-negative."),
+      need(input$o1 >= 1, "Overall pick must be at least 1."),
+      need(input$age1 >= 16 && input$age1 <= 25, "Age must be between 16 and 25.")
+    )
+    
+    # Keep table at main reporting horizons
+    table_horizons <- c(3, 5, 8, 10)
+    
+    pred <- predict_player_risks(
+      model_obj = final_app_model,
+      ovpck = input$o1,
+      bonus = input$b1,
+      slot = input$s1,
+      type = input$t1,
+      newpos = input$p1,
+      age = input$age1,
+      bats = input$bats1,
+      covid_era = "Post-COVID",
+      horizons = table_horizons
+    )
+    
+    out <- data.frame(
+      "Years Since Draft" = as.integer(pred$time),
+      "Reach MLB" = paste0(round(100 * pred$MLB, 1), "%"),
+      "Retire before MLB" = paste0(round(100 * pred$Retire, 1), "%"),
+      "Censored (Playing in MiLB)" = paste0(round(100 * pred$Unresolved, 1), "%"),
+      check.names = FALSE
+    )
+    
+    out
+  }, striped = TRUE, bordered = TRUE, spacing = "s")
     
 }
 
