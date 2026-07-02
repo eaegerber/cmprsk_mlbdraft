@@ -9,6 +9,7 @@ cmprsk_mlbdraft/
 ├── conferences/                       # supplemental files presented at JSM 2022, NESSIS 2023, JSM 2024
 ├── data cleaning/                     # Raw and processed datasets + .R files
 ├── R/                     
+│   ├── app updating/                  # Temporary files for Shiny app updating
 │   ├── FGR score outputs/             # Model validation/assumption checking of Fine-Gray models
 │   ├── time varying tests/            # Testing for time varying effects of covariates
 │   ├── final model reporting outputs/ # Final modeling results/summary tables
