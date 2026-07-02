@@ -5,8 +5,8 @@ account: e-gerber
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6713353
-bundleId: 8951548
+bundleId: 12213136
 url: https://e-gerber.shinyapps.io/DraftSurvival/
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: cleaned_analysis.R|Jul28_final_analysis.RData|mlbdraft2012_2016.xlsx|modelfit_831.RData
+ignoredFiles: deprecated_models/cleaned_df.csv|deprecated_models/Jul28_final_analysis.RData|deprecated_models/mlbdraft2012_2016.xlsx|deprecated_models/modelfit_050224.RData|deprecated_models/modelfit_831.RData|deprecated_scripts/cleaned_analysis.R|scripts/make_final_app_model.R|scripts/test_final_app_predictions.R|test_outputs/test_final_app_prediction_monotonicity.csv|test_outputs/test_final_app_predictions.csv
