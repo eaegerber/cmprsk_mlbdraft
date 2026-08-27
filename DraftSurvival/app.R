@@ -15,6 +15,11 @@ library(shinythemes)
 final_app_model <- readRDS(file.path("model_objects", "final_app_model.rds"))
 source(file.path("R", "prediction_helpers.R"))
 
+# Compare Players
+source(file.path("R", "compare_players.R"))
+player_lookup_bundle <- readRDS(
+  file.path("model_objects", "player_lookup.rds")
+)
 
 info_label <- function(label, tooltip) {
   tagList(
@@ -371,14 +376,7 @@ ui <- fluidPage(
                )
                ),
       
-      # tabPanel(
-      #   "Compare Players",
-      #   div(
-      #     class = "intro-card",
-      #     h3("Compare Players"),
-      #     p("This feature is being updated for the new time-varying model and will be added in a future version.")
-      #   )
-      # ),
+      compare_players_ui(),
       
       tabPanel("Project Information",
                
@@ -403,7 +401,14 @@ ui <- fluidPage(
 
 # Define server logic required to draw plot
 server <- function(input, output, session) {
-  
+
+    compare_players_server(
+    input = input,
+    output = output,
+    session = session,
+    model_obj = final_app_model,
+    lookup_bundle = player_lookup_bundle
+  )
   
 #  url <- a(" at this link.", href="http://dx.doi.org/10.13140/RG.2.2.28623.46249")
 #  output$tab <- renderUI({
