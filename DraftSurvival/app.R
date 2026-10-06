@@ -15,6 +15,11 @@ library(shinythemes)
 final_app_model <- readRDS(file.path("model_objects", "final_app_model.rds"))
 source(file.path("R", "prediction_helpers.R"))
 
+# Compare Players
+source(file.path("R", "compare_players.R"))
+player_lookup_bundle <- readRDS(
+  file.path("model_objects", "player_lookup.rds")
+)
 
 info_label <- function(label, tooltip) {
   tagList(
@@ -371,61 +376,100 @@ ui <- fluidPage(
                )
                ),
       
-      # tabPanel(
-      #   "Compare Players",
-      #   div(
-      #     class = "intro-card",
-      #     h3("Compare Players"),
-      #     p("This feature is being updated for the new time-varying model and will be added in a future version.")
-      #   )
-      # ),
+      compare_players_ui(),
       
-      tabPanel("Project Information",
-               
-               # Link to poster
-               uiOutput("tab"),
-               
-               # add white space
-               headerPanel(""),
-               
-               # information
-               uiOutput("info"),
-               
-               # add white space
-               headerPanel(""),
-               
-               uiOutput("eaeg")
-               
-               )
+      tabPanel(
+        "Project Information",
+
+        div(
+          class = "intro-card",
+          h3("About the Project"),
+          uiOutput("info")
+        ),
+
+        div(
+          class = "intro-card",
+          h3("Project Contributors"),
+          uiOutput("eaeg")
+        )
+      )
     )
 
 )
 
 # Define server logic required to draw plot
 server <- function(input, output, session) {
-  
+
+    compare_players_server(
+    input = input,
+    output = output,
+    session = session,
+    model_obj = final_app_model,
+    lookup_bundle = player_lookup_bundle
+  )
   
 #  url <- a(" at this link.", href="http://dx.doi.org/10.13140/RG.2.2.28623.46249")
 #  output$tab <- renderUI({
 #    tagList("A poster with more details of the method and results can be found", url, " A manuscript is also being prepared for submission to the Journal of Sports Analytics.")
 #  })
   
-#  linkedIn <- a("LinkedIn", href = "https://www.linkedin.com/in/eric-gerber-42544255/")
-#  ResearchGate <- a("ResearchGate.", href = "https://www.researchgate.net/profile/Eric-Gerber-4")
-  bbref <- a("baseball-reference.com", href = "https://www.baseball-reference.com/")
-  bbam <- a("Baseball America", href = "https://www.baseballamerica.com/")
-#  output$info <- renderUI({
-#    tagList("Eric A. E. Gerber is an Assistant Teaching Professor at Northeastern University in Boston, MA and Migzhao Hu is an Assistant Professor at the Mayo Clinic in Rochester, MN. This project was supported in part by the Office of Grants, Research, and Sponsored Programs (GRaSP) at CSU Bakersfield as part of a faculty research funding program of the Research Council of the University (RCU). MLB draft data were manually collected from ", bbref, ". Slot Values were manually collected from ", bbam, ". \n\n The authors would also like to thank several students who had both tangible and intangible impacts upon the development of this work, including students Nelson Guirado (CSU Bakersfield) who performed most of the data collection, and Yash Jayaprakash, Nikhil Bommareddy, Kaamil Thobani, Ryan Monahan, Vamshi Pagidi, and Xi Chen (Northeastern University) who provided both good ideas and some technical support." )
-#  })
-  
-    output$info <- renderUI({
-      tagList("MLB draft data were manually collected from ", bbref, ". Slot Values were manually collected from ", bbam, "." )
-    })
-  
-  
-#  output$eaeg <- renderUI({
-#    tagList("Dr. Gerber can be reached via ", linkedIn, " or ", ResearchGate)
-#  })
+  linkedIn <- a(
+    "LinkedIn",
+    href = "https://www.linkedin.com/in/eric-gerber-42544255/",
+    target = "_blank"
+  )
+  ResearchGate <- a(
+    "ResearchGate",
+    href = "https://www.researchgate.net/profile/Eric-Gerber-4",
+    target = "_blank"
+  )
+  bbref <- a(
+    "baseball-reference.com",
+    href = "https://www.baseball-reference.com/",
+    target = "_blank"
+  )
+  bbam <- a(
+    "Baseball America",
+    href = "https://www.baseballamerica.com/",
+    target = "_blank"
+  )
+
+  output$info <- renderUI({
+    tagList(
+      p(
+        "This project uses competing-risks survival modeling to study how MLB ",
+        "draft-day characteristics relate to the time until a player reaches MLB ",
+        "or retires before reaching MLB."
+      ),
+      p(
+        "MLB draft data were manually collected from ", bbref,
+        ". Slot values were manually collected from ", bbam, "."
+      )
+    )
+  })
+
+  output$eaeg <- renderUI({
+    tagList(
+      h4("Eric A. E. Gerber, PhD"),
+      p(
+        "Eric A. E. Gerber is an Assistant Teaching Professor at ",
+        "Northeastern University in Boston, MA."
+      ),
+      p(
+        "Dr. Gerber can be reached via ", linkedIn, " or ", ResearchGate, "."
+      ),
+      tags$hr(),
+      h4("Manika Sakulsureeyadej"),
+      p(
+        "Manika Sakulsureeyadej is a Northeastern University graduate in ",
+        "Data Science and Business Administration who contributed to this ",
+        "project as a research assistant. She developed the Compare Players ",
+        "functionality for the Shiny application, including historical and ",
+        "manually entered player comparisons, interactive competing-risk ",
+        "visualizations, comparison controls, input validation, and supporting tests."
+      )
+    )
+  })
   
   
   output$bonusSlotText <- renderText({
