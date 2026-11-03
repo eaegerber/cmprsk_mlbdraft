@@ -2,7 +2,7 @@
 # test_compare_players.R
 #
 # Smoke/regression checks for the Compare Players lookup,
-# prediction behavior, draft-era handling, and UI series setup.
+# prediction behavior, draft-era handling, and calendar-axis mapping.
 #
 # Run from repository root:
 #   Rscript DraftSurvival/scripts/test_compare_players.R
@@ -69,14 +69,16 @@ stopifnot(
   !anyDuplicated(players$player_key)
 )
 
-# The four graph series must remain independently toggleable.
-series_choices <- cp_series_choices("Player A", "Player B")
+# Calendar-year mode starts each historical profile at its draft year
+# (time 0), then maps years 1-10 after draft to calendar years.
+calendar_bregman <- cp_calendar_years(2015, 1:10)
+calendar_bryant <- cp_calendar_years(2013, 1:10)
+
 stopifnot(
-  length(series_choices) == 4,
-  identical(
-    unname(series_choices),
-    c("a_mlb", "a_retire", "b_mlb", "b_retire")
-  )
+  identical(calendar_bregman, 2015:2025),
+  identical(calendar_bryant, 2013:2023),
+  2015 %in% calendar_bregman,
+  2015 %in% calendar_bryant
 )
 
 # If multiple model-eligible draft events exist for a person, each event must
@@ -175,7 +177,7 @@ row6_a <- pred_a_post[pred_a_post$time == 6, , drop = FALSE]
 row6_b <- pred_b_post[pred_b_post$time == 6, , drop = FALSE]
 
 cat("\nCompare Players smoke test PASSED.\n\n")
-cat("Four independently toggleable graph series: PASS\n")
+cat("Calendar-year axis mapping: PASS\n")
 cat("Manual Pre-/Post-COVID prediction behavior: PASS\n")
 cat(
   "Repeated model-eligible person IDs found:",

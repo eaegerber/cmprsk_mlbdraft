@@ -7,16 +7,8 @@
 # exact same final time-varying Fine-Gray models as Predict.
 ############################################################
 
-cp_series_choices <- function(label_a = "Player A", label_b = "Player B") {
-  setNames(
-    c("a_mlb", "a_retire", "b_mlb", "b_retire"),
-    c(
-      paste0(label_a, " — Reach MLB"),
-      paste0(label_a, " — Retire before MLB"),
-      paste0(label_b, " — Reach MLB"),
-      paste0(label_b, " — Retire before MLB")
-    )
-  )
+cp_calendar_years <- function(draft_year, prediction_time) {
+  c(as.integer(draft_year), as.integer(draft_year) + as.integer(prediction_time))
 }
 
 cp_manual_profile_ui <- function(prefix, title, default_pick = 100,
@@ -136,20 +128,16 @@ cp_player_input_ui <- function(prefix, title,
       condition = sprintf("input.%s_source == 'historical'", prefix),
       selectizeInput(
         paste0(prefix, "_hist"),
-        "Search historical player",
+        "Historical player",
         choices = NULL,
         selected = NULL,
         multiple = FALSE,
         options = list(
-          placeholder = "Start typing a player name...",
-          maxOptions = 50
+          placeholder = "Select or search a player...",
+          maxOptions = 20000,
+          openOnFocus = TRUE,
+          closeAfterSelect = TRUE
         )
-      ),
-      p(
-        class = "small-note",
-        "Each choice represents one signed, complete, model-eligible draft record. ",
-        "If a player has more than one eligible draft event, each event is treated as a separate profile. ",
-        "An earlier unsigned draft event can be recreated with Manual profile."
       )
     ),
     conditionalPanel(
@@ -165,10 +153,6 @@ cp_player_input_ui <- function(prefix, title,
         default_age = default_age,
         default_bats = default_bats,
         default_covid = default_covid
-      ),
-      p(
-        class = "small-note",
-        "Choose Pre-COVID or Post-COVID to control the draft-era setting used by the MLB-reaching model."
       )
     )
   )
@@ -310,22 +294,19 @@ compare_players_ui <- function() {
         min-width: 0;
       }
 
-      .compare-chart-controls {
-        background: #f7f8fa;
-        border-radius: 9px;
-        padding: 10px 12px 4px 12px;
-        margin-bottom: 8px;
+      .compare-axis-toggle {
+        margin: 2px 0 6px 0;
       }
 
-      .compare-chart-controls .control-label {
+      .compare-axis-toggle .control-label {
         font-size: 12px;
         font-weight: 600;
         margin-bottom: 5px;
       }
 
-      .compare-chart-controls .checkbox {
-        margin-top: 3px;
-        margin-bottom: 5px;
+      .compare-axis-toggle .radio {
+        margin-top: 2px;
+        margin-bottom: 4px;
       }
 
       .compare-plot-wrap {
@@ -385,15 +366,13 @@ compare_players_ui <- function() {
       class = "intro-card",
       h3("Compare Two Player Profiles"),
       p(
-        "Compare two historical draft profiles, two manual profiles, or one of each. ",
-        "Each line is a model-based cumulative probability over the first 10 years after the draft."
+        "Compare two historical draft profiles, two manual profiles, or one of each."
       ),
       p(
         class = "small-note",
-        "Historical profiles use the recorded draft-day characteristics and draft-era setting for that record. ",
-        "Manual profiles let you choose Pre-COVID or Post-COVID. ",
-        "Solid lines show reaching MLB; dashed lines show retiring before MLB. ",
-        "The remaining probability at each horizon is interpreted as Still Playing in MiLB."
+        "Historical choices are signed, complete, model-eligible draft records and use the recorded draft-day characteristics and draft era. ",
+        "Separate eligible draft events for the same player appear as separate profiles; unsigned events can be recreated manually. ",
+        "Solid lines show reaching MLB, dashed lines show retiring before MLB, and the remaining probability is interpreted as Still Playing in MiLB."
       )
     ),
 
@@ -436,7 +415,6 @@ compare_players_ui <- function() {
       )
     ),
 
-    uiOutput("cp_result_placeholder"),
     uiOutput("cp_prediction_warning"),
     uiOutput("cp_takeaway"),
     uiOutput("cp_results_section")
@@ -469,41 +447,25 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
     )
   }
 
-  # Named vector: label -> internal key. server = TRUE keeps ~9k options
-  # out of the initial browser payload while still allowing name search.
+  # Named vector: display label -> internal key. Keep the controls blank
+  # initially and load the full historical list so users can either browse
+  # or type to search.
   player_choices <- setNames(players$player_key, players$display_label)
-
-  find_default_key <- function(name, year = NULL, fallback_index = 1L) {
-    idx <- which(tolower(players$Name) == tolower(name))
-    if (!is.null(year)) {
-      idx <- idx[players$Year[idx] == year]
-    }
-
-    if (length(idx) == 0) {
-      fallback_index <- min(max(1L, fallback_index), nrow(players))
-      return(players$player_key[fallback_index])
-    }
-
-    players$player_key[idx[1]]
-  }
-
-  default_a <- find_default_key("Alex Bregman", 2015, 1L)
-  default_b <- find_default_key("Kris Bryant", 2013, min(2L, nrow(players)))
 
   updateSelectizeInput(
     session,
     "cp_a_hist",
     choices = player_choices,
-    selected = default_a,
-    server = TRUE
+    selected = character(0),
+    server = FALSE
   )
 
   updateSelectizeInput(
     session,
     "cp_b_hist",
     choices = player_choices,
-    selected = default_b,
-    server = TRUE
+    selected = character(0),
+    server = FALSE
   )
 
   historical_profile <- function(key, side_label) {
@@ -769,17 +731,6 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
     comparison(result)
   })
 
-  output$cp_result_placeholder <- renderUI({
-    if (!is.null(comparison())) {
-      return(NULL)
-    }
-
-    div(
-      class = "model-note",
-      "Choose two profiles above, then click Compare Players to view their projected MLB and retirement trajectories."
-    )
-  })
-
   output$cp_prediction_warning <- renderUI({
     x <- comparison()
     if (is.null(x)) {
@@ -801,7 +752,7 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
         warning_lines,
         paste0(
           x$profile_a$side, " (", x$profile_a$label,
-          "): combined MLB + retirement CIF reaches ",
+          "): MLB + retirement reaches ",
           round(100 * max(total_a[invalid_a]), 1), "% at the affected horizon(s)."
         )
       )
@@ -813,7 +764,7 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
         warning_lines,
         paste0(
           x$profile_b$side, " (", x$profile_b$label,
-          "): combined MLB + retirement CIF reaches ",
+          "): MLB + retirement reaches ",
           round(100 * max(total_b[invalid_b]), 1), "% at the affected horizon(s)."
         )
       )
@@ -821,9 +772,9 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
 
     div(
       class = "compare-warning",
-      strong("Competing-risk sum note: "),
-      "The MLB and retirement CIFs are estimated separately, and for this profile they sum slightly above 100% at one or more horizons. ",
-      "The fitted models are unchanged; Still Playing in MiLB is floored at 0% at those horizons.",
+      strong("Model note: "),
+      "At some horizons, the separately estimated MLB and retirement probabilities sum slightly above 100%. ",
+      "The fitted models are unchanged, and Still Playing in MiLB is shown as 0% at those horizons.",
       tags$ul(lapply(warning_lines, tags$li))
     )
   })
@@ -912,6 +863,32 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
     )
   }
 
+  live_profile <- function(prefix, side_label) {
+    tryCatch({
+      source_value <- input[[paste0(prefix, "_source")]]
+
+      if (is.null(source_value)) {
+        return(NULL)
+      }
+
+      if (identical(source_value, "historical")) {
+        key <- input[[paste0(prefix, "_hist")]]
+        if (is.null(key) || length(key) == 0 || is.na(key) || key == "") {
+          return(NULL)
+        }
+      }
+
+      get_profile(prefix, side_label)
+    }, error = function(e) NULL)
+  }
+
+  live_profiles <- reactive({
+    list(
+      profile_a = live_profile("cp_a", "Player A"),
+      profile_b = live_profile("cp_b", "Player B")
+    )
+  })
+
   output$cp_takeaway <- renderUI({
     x <- comparison()
     req(!is.null(x))
@@ -976,68 +953,118 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
 
   output$cp_results_section <- renderUI({
     x <- comparison()
-    req(!is.null(x))
+    live <- live_profiles()
 
-    series_choices <- cp_series_choices(x$profile_a$label, x$profile_b$label)
+    profiles_to_show <- if (!is.null(x)) {
+      list(x$profile_a, x$profile_b)
+    } else {
+      list(live$profile_a, live$profile_b)
+    }
+
+    cards <- lapply(profiles_to_show, function(profile) {
+      if (is.null(profile)) NULL else profile_card(profile)
+    })
+    cards <- Filter(Negate(is.null), cards)
+
+    if (length(cards) == 0 && is.null(x)) {
+      return(
+        div(
+          class = "model-note",
+          "Select a historical player or switch to a manual profile to preview draft-day characteristics."
+        )
+      )
+    }
+
+    chart_content <- if (is.null(x)) {
+      div(
+        class = "compare-chart-card",
+        h4("Projected Draft Outcomes"),
+        p(
+          class = "small-note",
+          "Select both profiles, then click Compare Players to view their projected trajectories."
+        )
+      )
+    } else {
+      both_historical <- identical(x$profile_a$source, "historical") &&
+        identical(x$profile_b$source, "historical")
+
+      axis_control <- if (both_historical) {
+        div(
+          class = "compare-axis-toggle",
+          radioButtons(
+            "cp_x_axis_mode",
+            "X-axis",
+            choices = c(
+              "Years Since Draft" = "since_draft",
+              "Calendar Year" = "calendar"
+            ),
+            selected = "since_draft",
+            inline = TRUE
+          )
+        )
+      } else {
+        p(
+          class = "small-note",
+          "Calendar Year view is available when both profiles are historical."
+        )
+      }
+
+      div(
+        class = "compare-chart-card",
+        h4("Projected Draft Outcomes"),
+        axis_control,
+        p(
+          class = "small-note",
+          "Hover over annual markers for exact cumulative probabilities. Click legend entries to hide or show traces."
+        ),
+        div(
+          class = "compare-plot-wrap",
+          plotly::plotlyOutput("cp_plot", width = "100%", height = "520px")
+        )
+      )
+    }
+
+    table_section <- if (is.null(x)) {
+      NULL
+    } else {
+      tagList(
+        div(
+          class = "compare-table-toggle",
+          checkboxInput(
+            "cp_show_table",
+            "Show comparison table",
+            value = FALSE
+          )
+        ),
+        conditionalPanel(
+          condition = "input.cp_show_table === true",
+          div(
+            class = "compare-table-wrap",
+            h4("Comparison at key horizons"),
+            tableOutput("cp_table")
+          )
+        ),
+        p(
+          class = "small-note",
+          "Model-based probabilities are not guarantees. Historical comparisons use draft-day characteristics only."
+        )
+      )
+    }
 
     div(
       class = "compare-results-wrap",
-
       div(
         class = "compare-analysis-grid",
-
-        div(
-          class = "compare-profile-stack",
-          profile_card(x$profile_a),
-          profile_card(x$profile_b)
-        ),
-
-        div(
-          class = "compare-chart-card",
-          h4("Projected Draft Outcomes"),
-          div(
-            class = "compare-chart-controls",
-            checkboxGroupInput(
-              "cp_visible_series",
-              "Lines shown",
-              choices = series_choices,
-              selected = unname(series_choices)
-            ),
-            p(
-              class = "small-note",
-              "Hover over annual markers for exact cumulative probabilities. You can also click legend entries to hide or show traces."
-            )
-          ),
-          div(
-            class = "compare-plot-wrap",
-            plotly::plotlyOutput("cp_plot", width = "100%", height = "520px")
+        do.call(
+          div,
+          c(
+            list(class = "compare-profile-stack"),
+            cards
           )
-        )
+        ),
+        chart_content
       ),
-
-      div(
-        class = "compare-table-toggle",
-        checkboxInput(
-          "cp_show_table",
-          "Show comparison table",
-          value = FALSE
-        )
-      ),
-
-      conditionalPanel(
-        condition = "input.cp_show_table === true",
-        div(
-          class = "compare-table-wrap",
-          h4("Comparison at key horizons"),
-          tableOutput("cp_table")
-        )
-      ),
-
-      p(
-        class = "small-note",
-        "These are model-based cumulative probabilities, not guarantees for an individual player. ",
-        "A historical comparison uses draft-day characteristics only; it does not use later MLB performance."
-      )
+      table_section
     )
   })
 
@@ -1045,85 +1072,167 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
     x <- comparison()
     req(!is.null(x))
 
-    visible <- input$cp_visible_series
-    validate(
-      need(length(visible) > 0, "Select at least one line to display.")
-    )
-
     pa <- x$pred_a
     pb <- x$pred_b
+
+    both_historical <- identical(x$profile_a$source, "historical") &&
+      identical(x$profile_b$source, "historical")
+
+    axis_mode <- if (
+      both_historical &&
+      !is.null(input$cp_x_axis_mode) &&
+      identical(input$cp_x_axis_mode, "calendar")
+    ) {
+      "calendar"
+    } else {
+      "since_draft"
+    }
 
     col_a <- "#2c7fb8"
     col_b <- "#d95f02"
 
-    make_hover <- function(profile_label, outcome_label, time, probability) {
-      paste0(
-        "<b>", profile_label, "</b>",
-        "<br>", outcome_label,
-        "<br>Years since draft: ", time,
-        "<br>Cumulative probability: ", sprintf("%.2f%%", 100 * probability)
-      )
+    make_series <- function(profile, pred, probability) {
+      if (identical(axis_mode, "calendar")) {
+        list(
+          x = cp_calendar_years(profile$year, pred$time),
+          y = c(0, probability),
+          years_since = c(0, pred$time)
+        )
+      } else {
+        list(
+          x = pred$time,
+          y = probability,
+          years_since = pred$time
+        )
+      }
+    }
+
+    a_mlb <- make_series(x$profile_a, pa, pa$MLB)
+    a_retire <- make_series(x$profile_a, pa, pa$Retire)
+    b_mlb <- make_series(x$profile_b, pb, pb$MLB)
+    b_retire <- make_series(x$profile_b, pb, pb$Retire)
+
+    make_hover <- function(profile_label, outcome_label, series) {
+      if (identical(axis_mode, "calendar")) {
+        paste0(
+          "<b>", profile_label, "</b>",
+          "<br>", outcome_label,
+          "<br>Calendar year: ", series$x,
+          "<br>Years since draft: ", series$years_since,
+          "<br>Cumulative probability: ", sprintf("%.2f%%", 100 * series$y)
+        )
+      } else {
+        paste0(
+          "<b>", profile_label, "</b>",
+          "<br>", outcome_label,
+          "<br>Years since draft: ", series$years_since,
+          "<br>Cumulative probability: ", sprintf("%.2f%%", 100 * series$y)
+        )
+      }
     }
 
     p <- plotly::plot_ly()
 
-    if ("a_mlb" %in% visible) {
-      p <- plotly::add_trace(
-        p,
-        x = pa$time,
-        y = pa$MLB,
-        type = "scatter",
-        mode = "lines+markers",
-        name = paste0(x$profile_a$label, " — Reach MLB"),
-        line = list(color = col_a, width = 3, dash = "solid", shape = "hv"),
-        marker = list(color = col_a, size = 6),
-        text = make_hover(x$profile_a$label, "Reach MLB", pa$time, pa$MLB),
-        hovertemplate = "%{text}<extra></extra>"
-      )
-    }
+    p <- plotly::add_trace(
+      p,
+      x = a_mlb$x,
+      y = a_mlb$y,
+      type = "scatter",
+      mode = "lines+markers",
+      name = paste0(x$profile_a$label, " — Reach MLB"),
+      line = list(color = col_a, width = 3, dash = "solid", shape = "hv"),
+      marker = list(color = col_a, size = 6),
+      text = make_hover(x$profile_a$label, "Reach MLB", a_mlb),
+      hovertemplate = "%{text}<extra></extra>"
+    )
 
-    if ("a_retire" %in% visible) {
-      p <- plotly::add_trace(
-        p,
-        x = pa$time,
-        y = pa$Retire,
-        type = "scatter",
-        mode = "lines+markers",
-        name = paste0(x$profile_a$label, " — Retire before MLB"),
-        line = list(color = col_a, width = 3, dash = "dash", shape = "hv"),
-        marker = list(color = col_a, size = 6),
-        text = make_hover(x$profile_a$label, "Retire before MLB", pa$time, pa$Retire),
-        hovertemplate = "%{text}<extra></extra>"
-      )
-    }
+    p <- plotly::add_trace(
+      p,
+      x = a_retire$x,
+      y = a_retire$y,
+      type = "scatter",
+      mode = "lines+markers",
+      name = paste0(x$profile_a$label, " — Retire before MLB"),
+      line = list(color = col_a, width = 3, dash = "dash", shape = "hv"),
+      marker = list(color = col_a, size = 6),
+      text = make_hover(x$profile_a$label, "Retire before MLB", a_retire),
+      hovertemplate = "%{text}<extra></extra>"
+    )
 
-    if ("b_mlb" %in% visible) {
-      p <- plotly::add_trace(
-        p,
-        x = pb$time,
-        y = pb$MLB,
-        type = "scatter",
-        mode = "lines+markers",
-        name = paste0(x$profile_b$label, " — Reach MLB"),
-        line = list(color = col_b, width = 3, dash = "solid", shape = "hv"),
-        marker = list(color = col_b, size = 6),
-        text = make_hover(x$profile_b$label, "Reach MLB", pb$time, pb$MLB),
-        hovertemplate = "%{text}<extra></extra>"
-      )
-    }
+    p <- plotly::add_trace(
+      p,
+      x = b_mlb$x,
+      y = b_mlb$y,
+      type = "scatter",
+      mode = "lines+markers",
+      name = paste0(x$profile_b$label, " — Reach MLB"),
+      line = list(color = col_b, width = 3, dash = "solid", shape = "hv"),
+      marker = list(color = col_b, size = 6),
+      text = make_hover(x$profile_b$label, "Reach MLB", b_mlb),
+      hovertemplate = "%{text}<extra></extra>"
+    )
 
-    if ("b_retire" %in% visible) {
-      p <- plotly::add_trace(
-        p,
-        x = pb$time,
-        y = pb$Retire,
-        type = "scatter",
-        mode = "lines+markers",
-        name = paste0(x$profile_b$label, " — Retire before MLB"),
-        line = list(color = col_b, width = 3, dash = "dash", shape = "hv"),
-        marker = list(color = col_b, size = 6),
-        text = make_hover(x$profile_b$label, "Retire before MLB", pb$time, pb$Retire),
-        hovertemplate = "%{text}<extra></extra>"
+    p <- plotly::add_trace(
+      p,
+      x = b_retire$x,
+      y = b_retire$y,
+      type = "scatter",
+      mode = "lines+markers",
+      name = paste0(x$profile_b$label, " — Retire before MLB"),
+      line = list(color = col_b, width = 3, dash = "dash", shape = "hv"),
+      marker = list(color = col_b, size = 6),
+      text = make_hover(x$profile_b$label, "Retire before MLB", b_retire),
+      hovertemplate = "%{text}<extra></extra>"
+    )
+
+    if (identical(axis_mode, "calendar")) {
+      all_x <- c(a_mlb$x, b_mlb$x)
+
+      xaxis_settings <- list(
+        title = "Calendar Year",
+        tickmode = "linear",
+        tick0 = min(all_x),
+        dtick = 1,
+        range = c(min(all_x) - 0.25, max(all_x) + 0.25),
+        fixedrange = FALSE,
+        gridcolor = "#eeeeee",
+        zeroline = FALSE
+      )
+
+      reference_shapes <- list()
+      reference_annotations <- list()
+    } else {
+      xaxis_settings <- list(
+        title = "Years Since Draft",
+        tickmode = "linear",
+        tick0 = 1,
+        dtick = 1,
+        range = c(1, 10),
+        fixedrange = FALSE,
+        gridcolor = "#eeeeee",
+        zeroline = FALSE
+      )
+
+      reference_shapes <- list(
+        list(
+          type = "line",
+          x0 = 6,
+          x1 = 6,
+          y0 = 0,
+          y1 = 1,
+          line = list(color = "#bdbdbd", width = 1, dash = "dot")
+        )
+      )
+
+      reference_annotations <- list(
+        list(
+          x = 6,
+          y = 1,
+          text = "6-year reference",
+          showarrow = FALSE,
+          yshift = 10,
+          font = list(size = 10, color = "#777777")
+        )
       )
     }
 
@@ -1139,16 +1248,7 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
         yanchor = "bottom",
         font = list(size = 11)
       ),
-      xaxis = list(
-        title = "Years Since Draft",
-        tickmode = "linear",
-        tick0 = 1,
-        dtick = 1,
-        range = c(1, 10),
-        fixedrange = FALSE,
-        gridcolor = "#eeeeee",
-        zeroline = FALSE
-      ),
+      xaxis = xaxis_settings,
       yaxis = list(
         title = "Cumulative Probability",
         range = c(0, 1),
@@ -1158,26 +1258,8 @@ compare_players_server <- function(input, output, session, model_obj, lookup_bun
         gridcolor = "#eeeeee",
         zeroline = FALSE
       ),
-      shapes = list(
-        list(
-          type = "line",
-          x0 = 6,
-          x1 = 6,
-          y0 = 0,
-          y1 = 1,
-          line = list(color = "#bdbdbd", width = 1, dash = "dot")
-        )
-      ),
-      annotations = list(
-        list(
-          x = 6,
-          y = 1,
-          text = "6-year reference",
-          showarrow = FALSE,
-          yshift = 10,
-          font = list(size = 10, color = "#777777")
-        )
-      )
+      shapes = reference_shapes,
+      annotations = reference_annotations
     )
 
     plotly::config(
