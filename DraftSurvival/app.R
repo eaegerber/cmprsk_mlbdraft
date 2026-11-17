@@ -164,13 +164,13 @@ ui <- fluidPage(
     
     .golden-plot-wrap {
       width: 100%;
-      max-width: 800px;
-      aspect-ratio: 1.618 / 1;
+      max-width: 900px;
+      aspect-ratio: 1.7 / 1;
       background: #ffffff;
       border-radius: 10px;
-      padding: 10px;
+      padding: 12px 14px 8px 14px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      margin: 0 auto 18px auto;
+      margin: 0 auto 12px auto;
     }
     
     .golden-plot-wrap .shiny-plot-output,
@@ -188,6 +188,61 @@ ui <- fluidPage(
       margin-bottom: 14px;
       color: #444444;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .predict-results-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 2px 0 8px 0;
+    }
+
+    .predict-results-header h4 {
+      margin: 0;
+      font-weight: 600;
+      color: #333333;
+    }
+
+    .predict-results-header .small-note {
+      text-align: right;
+    }
+
+    .predict-table-toggle {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 8px 0 10px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .predict-table-toggle .form-group {
+      margin-bottom: 0;
+    }
+
+    .predict-table-wrap {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    .predict-table-wrap h4 {
+      margin-top: 0;
+      font-weight: 600;
+    }
+
+    @media (max-width: 700px) {
+      .predict-results-header {
+        display: block;
+      }
+
+      .predict-results-header .small-note {
+        text-align: left;
+        margin-top: 4px;
+      }
     }
 
     .info-icon {
@@ -364,26 +419,35 @@ ui <- fluidPage(
                    uiOutput("profileSummary"),
                    uiOutput("headlineRisk"),
                    div(
+                     class = "predict-results-header",
+                     h4("Projected Draft Outcomes"),
+                     p(
+                       class = "small-note",
+                       "Hover for exact values · click legend entries to show or hide lines"
+                     )
+                   ),
+                   div(
                      class = "golden-plot-wrap",
                      plotly::plotlyOutput("distPlot", width = "100%", height = "100%")
                    ),
-                   p(
-                     class = "small-note",
-                     "Hover over annual markers for exact cumulative probabilities. Click legend entries to hide or show traces."
-                   ),
-                   br(),
-                   checkboxInput(
-                     "showPredictTable",
-                     "Show predicted cumulative probabilities table",
-                     value = FALSE
+                   div(
+                     class = "predict-table-toggle",
+                     checkboxInput(
+                       "showPredictTable",
+                       "Show probability table",
+                       value = FALSE
+                     )
                    ),
                    conditionalPanel(
                      condition = "input.showPredictTable === true",
-                     h4("Predicted cumulative probabilities"),
-                     tableOutput("riskTable"),
-                     p(
-                       class = "small-note",
-                       "Table values show the estimated probability of each outcome by selected years after the draft, not guarantees for individual players."
+                     div(
+                       class = "predict-table-wrap",
+                       h4("Predicted cumulative probabilities"),
+                       tableOutput("riskTable"),
+                       p(
+                         class = "small-note",
+                         "Estimated cumulative probabilities at selected years after the draft; these are model-based projections, not guarantees."
+                       )
                      )
                    ),
                    width = 9
@@ -691,20 +755,16 @@ server <- function(input, output, session) {
 
     p <- plotly::layout(
       p,
-      title = list(
-        text = "Projected Draft Outcomes",
-        x = 0.5,
-        xanchor = "center"
-      ),
       hovermode = "closest",
-      margin = list(l = 72, r = 20, b = 62, t = 72),
+      margin = list(l = 72, r = 20, b = 62, t = 52),
       legend = list(
         orientation = "h",
         x = 0,
-        y = 1.06,
+        y = 1.02,
         xanchor = "left",
         yanchor = "bottom",
-        font = list(size = 11)
+        font = list(size = 11),
+        bgcolor = "rgba(255,255,255,0.85)"
       ),
       xaxis = list(
         title = "Years Since Draft",

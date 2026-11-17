@@ -28,7 +28,13 @@ required_patterns <- c(
   'name = "Retire before MLB"',
   'hovertemplate = "%{text}<extra></extra>"',
   'shape = "hv"',
-  'if (isTRUE(input$a5))'
+  'if (isTRUE(input$a5))',
+  'checkboxInput(',
+  '"showPredictTable"',
+  '"Show probability table"',
+  'h4("Projected Draft Outcomes")',
+  'condition = "input.showPredictTable === true"',
+  'tableOutput("riskTable")'
 )
 
 missing_patterns <- required_patterns[
@@ -55,3 +61,5 @@ cat("Plotly output/rendering: PASS\n")
 cat("Interactive hover tooltips: PASS\n")
 cat("Legend-toggleable MLB/retirement traces: PASS\n")
 cat("50% reference-line option preserved: PASS\n")
+cat("Optional predicted-probabilities table toggle: PASS\n")
+cat("Predict results layout formatting: PASS\n")
