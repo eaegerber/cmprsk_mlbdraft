@@ -34,7 +34,10 @@ required_patterns <- c(
   '"Show probability table"',
   'h4("Projected Draft Outcomes")',
   'condition = "input.showPredictTable === true"',
-  'tableOutput("riskTable")'
+  'tableOutput("riskTable")',
+  '"Estimated model-based cumulative probabilities at selected years after the draft."',
+  '"<br>Cumulative percent: "',
+  'title = "Cumulative Percent"'
 )
 
 missing_patterns <- required_patterns[
@@ -63,3 +66,4 @@ cat("Legend-toggleable MLB/retirement traces: PASS\n")
 cat("50% reference-line option preserved: PASS\n")
 cat("Optional predicted-probabilities table toggle: PASS\n")
 cat("Predict results layout formatting: PASS\n")
+cat("Gerber-requested wording updates: PASS\n")

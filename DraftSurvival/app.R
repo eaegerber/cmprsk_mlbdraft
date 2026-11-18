@@ -446,7 +446,7 @@ ui <- fluidPage(
                        tableOutput("riskTable"),
                        p(
                          class = "small-note",
-                         "Estimated cumulative probabilities at selected years after the draft; these are model-based projections, not guarantees."
+                         "Estimated model-based cumulative probabilities at selected years after the draft."
                        )
                      )
                    ),
@@ -682,7 +682,7 @@ server <- function(input, output, session) {
       paste0(
         "<b>", outcome_label, "</b>",
         "<br>Years since draft: ", time,
-        "<br>Cumulative probability: ", sprintf("%.2f%%", 100 * probability)
+        "<br>Cumulative percent: ", sprintf("%.2f%%", 100 * probability)
       )
     }
 
@@ -777,7 +777,7 @@ server <- function(input, output, session) {
         zeroline = FALSE
       ),
       yaxis = list(
-        title = "Cumulative Probability",
+        title = "Cumulative Percent",
         range = c(0, 1),
         tickformat = ".0%",
         dtick = 0.1,
