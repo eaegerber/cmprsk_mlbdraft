@@ -164,16 +164,19 @@ ui <- fluidPage(
     
     .golden-plot-wrap {
       width: 100%;
-      max-width: 800px;
-      aspect-ratio: 1.618 / 1;
+      max-width: 900px;
+      aspect-ratio: 1.7 / 1;
       background: #ffffff;
       border-radius: 10px;
-      padding: 10px;
+      padding: 12px 14px 8px 14px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      margin: 0 auto 18px auto;
+      margin: 0 auto 12px auto;
     }
     
-    .golden-plot-wrap .shiny-plot-output {
+    .golden-plot-wrap .shiny-plot-output,
+    .golden-plot-wrap .plotly,
+    .golden-plot-wrap .html-widget,
+    .golden-plot-wrap .js-plotly-plot {
       width: 100% !important;
       height: 100% !important;
     }
@@ -185,6 +188,61 @@ ui <- fluidPage(
       margin-bottom: 14px;
       color: #444444;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .predict-results-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 2px 0 8px 0;
+    }
+
+    .predict-results-header h4 {
+      margin: 0;
+      font-weight: 600;
+      color: #333333;
+    }
+
+    .predict-results-header .small-note {
+      text-align: right;
+    }
+
+    .predict-table-toggle {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 8px 0 10px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .predict-table-toggle .form-group {
+      margin-bottom: 0;
+    }
+
+    .predict-table-wrap {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    .predict-table-wrap h4 {
+      margin-top: 0;
+      font-weight: 600;
+    }
+
+    @media (max-width: 700px) {
+      .predict-results-header {
+        display: block;
+      }
+
+      .predict-results-header .small-note {
+        text-align: left;
+        margin-top: 4px;
+      }
     }
 
     .info-icon {
@@ -229,7 +287,7 @@ ui <- fluidPage(
                div(
                  class = "intro-card",
                  h3("MLB Draft Outcome Projection"),
-                 p("The plot below displays the predicted risk across each year after a player is drafted of both reaching MLB (blue solid) and Retiring (red dashed) based on the draft day factors as defined on the left."),
+                 p("The interactive plot below displays the predicted cumulative probability across each year after a player is drafted of both reaching MLB (blue solid) and retiring before MLB (orange dashed), based on the draft-day factors defined on the left."),
                  p(class = "small-note", "Predictions are based on signed MLB draft picks from 2012–2024 using competing risks models. For more details on the project, please see the Project Information tab above."),
                  p(class = "small-note", "Headline values show 6-year projections to align with minor league free agency; the table below includes additional 3-, 5-, 8-, and 10-year horizons.")
                ),
@@ -361,15 +419,36 @@ ui <- fluidPage(
                    uiOutput("profileSummary"),
                    uiOutput("headlineRisk"),
                    div(
-                     class = "golden-plot-wrap",
-                     plotOutput("distPlot", width = "100%", height = "100%")
+                     class = "predict-results-header",
+                     h4("Projected Draft Outcomes"),
+                     p(
+                       class = "small-note",
+                       "Hover for exact values · click legend entries to show or hide lines"
+                     )
                    ),
-                   br(),
-                   h4("Predicted cumulative probabilities"),
-                   tableOutput("riskTable"),
-                   p(
-                     class = "small-note",
-                     "Table values show the estimated probability of each outcome by selected years after the draft, not guarantees for individual players."
+                   div(
+                     class = "golden-plot-wrap",
+                     plotly::plotlyOutput("distPlot", width = "100%", height = "100%")
+                   ),
+                   div(
+                     class = "predict-table-toggle",
+                     checkboxInput(
+                       "showPredictTable",
+                       "Show probability table",
+                       value = FALSE
+                     )
+                   ),
+                   conditionalPanel(
+                     condition = "input.showPredictTable === true",
+                     div(
+                       class = "predict-table-wrap",
+                       h4("Predicted cumulative probabilities"),
+                       tableOutput("riskTable"),
+                       p(
+                         class = "small-note",
+                         "Estimated model-based cumulative probabilities at selected years after the draft."
+                       )
+                     )
                    ),
                    width = 9
                  )
@@ -506,6 +585,7 @@ server <- function(input, output, session) {
     #updateSelectInput(session, "bats1", selected = "R")
     updateRadioButtons(session, "bats1", selected = "R" )
     updateCheckboxInput(session, "a5", value = FALSE)
+    updateCheckboxInput(session, "showPredictTable", value = FALSE)
     # Add similar lines for any other inputs you want to update.
   })
 
@@ -570,18 +650,18 @@ server <- function(input, output, session) {
     )
   })
   
-  output$distPlot <- renderPlot({
-    
+  output$distPlot <- plotly::renderPlotly({
+
     validate(
       need(input$s1 > 0, "Slot value must be greater than 0."),
       need(input$b1 >= 0, "Bonus must be non-negative."),
       need(input$o1 >= 1, "Overall pick must be at least 1."),
       need(input$age1 >= 16 && input$age1 <= 25, "Age must be between 16 and 25.")
     )
-    
-    # Use annual predictions for smoother app-facing plot
+
+    # Use annual predictions to match the existing Predict-tab trajectory.
     plot_horizons <- 1:10
-    
+
     pred <- predict_player_risks(
       model_obj = final_app_model,
       ovpck = input$o1,
@@ -594,46 +674,127 @@ server <- function(input, output, session) {
       covid_era = "Post-COVID",
       horizons = plot_horizons
     )
-    
-    plot(
-      pred$time,
-      pred$MLB,
-      col = 4,
-      type = "s",
-      lty = 1,
-      lwd = 2,
-      ylim = c(0, 1),
-      xaxt = "n",
-      main = "Projected Draft Outcomes",
-      ylab = "Cumulative Probability",
-      xlab = "Years Since Draft"
-    )
-    
-    axis(1, at = plot_horizons)
-    
-    points(
-      pred$time,
-      pred$Retire,
-      col = 2,
-      type = "s",
-      lty = 2,
-      lwd = 2
-    )
-    
-    legend(
-      "topleft",
-      c("Reach MLB", "Retire before MLB"),
-      lty = c(1, 2),
-      col = c(4, 2),
-      lwd = 2,
-      bty = "n"
-    )
-    
-    if (input$a5 == TRUE) {
-      abline(h = .5, col = 1, lwd = 2)
+
+    col_mlb <- "#2c7fb8"
+    col_retire <- "#d95f02"
+
+    make_hover <- function(outcome_label, time, probability) {
+      paste0(
+        "<b>", outcome_label, "</b>",
+        "<br>Years since draft: ", time,
+        "<br>Cumulative percent: ", sprintf("%.2f%%", 100 * probability)
+      )
     }
+
+    p <- plotly::plot_ly()
+
+    p <- plotly::add_trace(
+      p,
+      x = pred$time,
+      y = pred$MLB,
+      type = "scatter",
+      mode = "lines+markers",
+      name = "Reach MLB",
+      line = list(
+        color = col_mlb,
+        width = 3,
+        dash = "solid",
+        shape = "hv"
+      ),
+      marker = list(
+        color = col_mlb,
+        size = 6
+      ),
+      text = make_hover("Reach MLB", pred$time, pred$MLB),
+      hovertemplate = "%{text}<extra></extra>"
+    )
+
+    p <- plotly::add_trace(
+      p,
+      x = pred$time,
+      y = pred$Retire,
+      type = "scatter",
+      mode = "lines+markers",
+      name = "Retire before MLB",
+      line = list(
+        color = col_retire,
+        width = 3,
+        dash = "dash",
+        shape = "hv"
+      ),
+      marker = list(
+        color = col_retire,
+        size = 6
+      ),
+      text = make_hover(
+        "Retire before MLB",
+        pred$time,
+        pred$Retire
+      ),
+      hovertemplate = "%{text}<extra></extra>"
+    )
+
+    reference_shapes <- if (isTRUE(input$a5)) {
+      list(
+        list(
+          type = "line",
+          x0 = min(plot_horizons),
+          x1 = max(plot_horizons),
+          y0 = 0.5,
+          y1 = 0.5,
+          line = list(
+            color = "#777777",
+            width = 2,
+            dash = "dot"
+          )
+        )
+      )
+    } else {
+      list()
+    }
+
+    p <- plotly::layout(
+      p,
+      hovermode = "closest",
+      margin = list(l = 72, r = 20, b = 62, t = 52),
+      legend = list(
+        orientation = "h",
+        x = 0,
+        y = 1.02,
+        xanchor = "left",
+        yanchor = "bottom",
+        font = list(size = 11),
+        bgcolor = "rgba(255,255,255,0.85)"
+      ),
+      xaxis = list(
+        title = "Years Since Draft",
+        tickmode = "linear",
+        tick0 = 1,
+        dtick = 1,
+        range = c(1, 10),
+        fixedrange = FALSE,
+        gridcolor = "#eeeeee",
+        zeroline = FALSE
+      ),
+      yaxis = list(
+        title = "Cumulative Percent",
+        range = c(0, 1),
+        tickformat = ".0%",
+        dtick = 0.1,
+        fixedrange = FALSE,
+        gridcolor = "#eeeeee",
+        zeroline = FALSE
+      ),
+      shapes = reference_shapes
+    )
+
+    plotly::config(
+      p,
+      displaylogo = FALSE,
+      modeBarButtonsToRemove = c("lasso2d", "select2d")
+    )
   })
-  
+
   output$riskTable <- renderTable({
     
     validate(
